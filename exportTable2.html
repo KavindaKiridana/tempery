@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DataTables Export Example</title>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+</head>
+<body>
+
+<h2>📚 Student Records</h2>
+
+<table id="myTable" class="display nowrap" style="width:100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>Amal</td><td>A</td></tr>
+        <tr><td>2</td><td>Kamal</td><td>B</td></tr>
+        <tr><td>3</td><td>Nimal</td><td>A</td></tr>
+        <tr><td>4</td><td>Sunil</td><td>C</td></tr>
+        <tr><td>5</td><td>Saman</td><td>B</td></tr>
+    </tbody>
+</table>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<!-- Buttons Plugin -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<!-- File Export Plugins -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<!-- Initialize DataTable with Buttons -->
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            dom: 'Bfrtip', // B = Buttons
+            buttons: [
+                'copy',     // Copy to clipboard
+                'excel',    // Export to Excel
+                'pdf',      // Export to PDF
+                'print'     // Print Table
+            ]
+        });
+    });
+</script>
+
+</body>
+</html>
