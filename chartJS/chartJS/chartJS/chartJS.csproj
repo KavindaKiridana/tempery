@@ -79,6 +79,7 @@
       <DependentUpon>Index.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="vanillaModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
