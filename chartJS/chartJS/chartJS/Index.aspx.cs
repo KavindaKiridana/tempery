@@ -28,7 +28,7 @@ namespace chartJS
                 {
                     TextBox1.Text = "connection was successful";
 
-                    string query = "SELECT * FROM [vanilla_farm_data]";//csv file name without extension
+                    string query = "SELECT * FROM [vanilla_farm_data.csv]"; // MUST include .txt//csv file name without extension
                     using (OleDbCommand cmd = new OleDbCommand(query, conn))
                     {
                         using (OleDbDataReader reader = cmd.ExecuteReader())//fix the bug here
