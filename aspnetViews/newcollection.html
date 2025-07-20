@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dairy Collections</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - MilkApp</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            padding: 5px;
+            font-size: 0.85rem;
+        }
+
+        .form-label, label, .nav-link {
+            font-size: 0.85rem;
+        }
+
+        .nav-tabs .nav-link:not(.active) {
+            background-color: #dee2e6;
+            color: #495057;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #ffffff;
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+
+        .title-tab {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            max-height: 400px; /* or use auto for full height */
+            overflow-y: auto;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            padding: 6px 10px;
+        }
+
+       
+        .form-control, .form-select {
+            padding: 4px 6px;
+            font-size: 0.85rem;
+        }
+        
+        .border {
+            padding: 8px !important;
+            margin-bottom: 8px;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            padding: 4px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .gap-2 {
+            gap: 4px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Title Bar -->
+    <!-- <h5 class="mb-3">Dairy Collections</h5> -->
+    <!-- Nav Tabs -->
+    <ul class="nav nav-tabs mb-2">
+        <!-- @{
+            string? username = HttpContextAccessor.HttpContext?.Session.GetString("centerCode");
+            if (!string.IsNullOrEmpty(username))
+            {
+                <div class="text-end small">Welcome,   username</div>
+            }
+        } -->
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="NewCollections" asp-action="Index">New Collections</a>
+        </li> &nbsp;
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="ViewCollections" asp-action="Index">View Collections</a>
+        </li>
+    </ul>
+
+    <main role="main" class="pb-2">
+
+<!--remove this if u dont want to saw error details-->
+<!-- @if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+@if (TempData["note"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["note"]
+    </div>
+} -->
+
+
+<!-- New Collections -->
+<!-- Form Section -->
+<form method="post" asp-controller="NewCollections" asp-action="CreateDBRecord" id="collectionForm">
+    <!--<div class="container mt-4">-->
+    
+    <input type="hidden" id="recordsJson" name="recordsJson" />
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label  class="form-label">Center</label>
+            <select class="form-select" name="SelectedCenterId" id="SelectedCenterId"> 
+                <option disabled>-- Select Center --</option>
+                 <!-- @foreach (var center in Model.Centers)
+                {
+                    <option value="@center.Id">@center.CenterName</option>
+                }  -->
+                <!--<option value="place 1">place 1</option>
+                    <option value="place 2">place 2</option>-->
+            </select>
+
+
+            <label class="form-label">Entity</label>
+            <div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="entity" id="societies">
+                    <label class="form-check-label" for="societies">Societies</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="entity" id="collectors">
+                    <label class="form-check-label" for="collectors">Collectors</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="entity" id="directFarmers">
+                    <label class="form-check-label" for="directFarmers">Direct Farmers</label>
+                </div>
+                <div id="societySelection">
+                    <label class="form-label">select society</label>
+                    <input class="form-control" list="societyDataList" id="societySelectionInput" name="societySelectionInput" placeholder="Search Society..."/>
+                    <datalist id="societyDataList">
+                        <!-- @foreach (var society in Model.Societies)
+                        {
+                            <option value="@society.SocietyCode">@society.SocietyName &nbsp; @society.SocietyCode</option>
+                        } -->
+                    </datalist>
+                </div>
+                <div id="collectorSelection">
+                    <label class="form-label">select collectors</label>
+                    <input class="form-control" list="collectorsDatalist" id="collectorSelectionInput" name="collectorSelectionInput" placeholder="Search Collector...">
+                    <datalist id="collectorsDatalist">
+        <!-- @foreach (var collector in Model.Collectors)
+        {
+                            <option value="@collector.CollectorCode">@collector.CollectorName &nbsp; @collector.CollectorCode</option>
+        } -->
+                    </datalist>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" id="inputDate">
+
+            <label class="form-label">Mor/Eve</label>
+            <select class="form-select" id="morEveSelect">
+                <option value="Morning">Morning</option>
+                <option value="Evening">Evening</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <div class="border">
+                <p class="mb-1"><strong>If apply for all</strong></p>
+                <div class="row g-1">
+                    <div class="col">
+                        <label class="form-label">FAT</label>
+                        <input type="number" step="0.1" min="0.1" oninput="validateFloat(this)" class="form-control" id="inputFATAll">
+                        <script>
+                            
+                        </script>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">SNF</label>
+                        <input type="number" step="0.1" min="0.1" class="form-control" id="inputSNFAll" oninput="validateFloat(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="border">
+                <div class="row g-1 mb-1">
+                    <div class="col">
+                        <label class="form-label">Farmer</label>
+                        <input list="farmersList" class="form-control" placeholder="Search Farmer..." id="inputFarmer" autocomplete="off">
+                        <datalist id="farmersList">
+                        <!-- Options will be populated dynamically by JavaScript -->
+                        </datalist>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const centerSelect = document.getElementById('SelectedCenterId');
+                            const farmerInput = document.getElementById('inputFarmer');
+                            const farmersList = document.getElementById('farmersList');
+                            const societyInput = document.getElementById('societySelectionInput');
+                            const collectorInput = document.getElementById('collectorSelectionInput');
+                            const entityRadios = document.querySelectorAll('input[name="entity"]');
+
+              //              const allFarmers = @Html.Raw(Json.Serialize(Model.Farmers));
+
+                            function updateFarmerOptions() {
+                                const selectedCenterId = centerSelect.value;
+                                const selectedEntity = Array.from(entityRadios).find(r => r.checked)?.id;
+
+                                let filterCode = '';
+                                if (selectedEntity === 'societies') {
+                                    filterCode = societyInput.value;
+                                } else if (selectedEntity === 'collectors') {
+                                    filterCode = collectorInput.value;
+                                }
+
+                                farmersList.innerHTML = '';
+
+                                const filteredFarmers = allFarmers.filter(farmer => {
+                                    if (farmer.CCode?.toString() !== selectedCenterId?.toString()) {
+                                        return false;
+                                    }
+
+                                    switch (selectedEntity) {
+                                        case 'societies':
+                                            return farmer.SCode === filterCode;
+                                        case 'collectors':
+                                            return farmer.ColCode === filterCode;
+                                        case 'directFarmers':
+                                            return farmer.SCode !== "S0000";
+                                        default:
+                                            return false;
+                                    }
+                                });
+
+                                filteredFarmers.forEach(farmer => {
+                                    const option = document.createElement('option');
+                                    option.value = farmer.OldFarmerCode;
+                                    option.setAttribute('data-oldcode', farmer.FarmerCode);
+                                    option.textContent = farmer.Name;
+                                    farmersList.appendChild(option);
+                                });
+
+                                farmerInput.value = '';
+                            }
+
+                            // Triggers for changes
+                            centerSelect.addEventListener('change', updateFarmerOptions);
+                            societyInput.addEventListener('input', updateFarmerOptions);
+                            collectorInput.addEventListener('input', updateFarmerOptions);
+                            entityRadios.forEach(r => r.addEventListener('change', updateFarmerOptions));
+
+                            // Initial run if pre-filled
+                            updateFarmerOptions();
+                        });
+
+                    </script>
+                    <div class="col">
+                        <label class="form-label">FAT</label>
+                        <input type="number" step="0.1" min="0.1" class="form-control" id="inputFAT" oninput="validateFloat(this)">
+                    </div>
+                    <div class="col">
+                        <label class="form-label">SNF</label>
+                        <input type="number" step="0.1" min="0.1" class="form-control" id="inputSNF" oninput="validateFloat(this)">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <label class="form-label">Quantity (Liter)</label>
+                    <input type="number" class="form-control" id="inputQt">
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" id="btnAdd">Add</button>
+                    <button class="btn btn-secondary" id="btnCancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div id="conditionalDiv" style="display: none;">
+                <p class="mb-1">&nbsp;</p>
+                <p class="mb-1">&nbsp;</p>
+                <p class="mb-1">&nbsp;</p>
+                <p class="mb-1">&nbsp;</p>
+            </div> 
+
+            <script>
+                function toggleDivDisplay() {
+                    const div = document.getElementById('conditionalDiv');
+                    div.style.display = window.innerWidth > 700 ? 'block' : 'none';
+                }
+
+                toggleDivDisplay();
+                window.addEventListener('resize', toggleDivDisplay);
+            </script>
+            <div class="border" id="summeryDiv">
+                <p class="mb-1">Total Quantity: 0</p>
+                <p class="mb-1">FAT Average: 0</p>
+                <p class="mb-1">SNF Average: 0</p>
+                <p class="mb-1">Records Count: 0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="title-tab mb-2" style="border-radius: 5px;">
+        <!-- Placeholder for data grid -->
+         <p class="mb-1"><strong>Collected Records:</strong></p><!-- table start here -->
+        <table id="recordsTable" class="table table-sm table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Center</th>
+            <th>Parent</th>
+            <th>Date</th>
+            <th>Mor/Eve</th>
+                    <th>OldCode</th>
+                    <th>Farmer</th>
+            <th>FAT</th>
+            <th>SNF</th>
+            <th>Quantity</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Records will be added here -->
+    </tbody>
+</table><!-- table end here -->
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-success" id="btnSave">Save</button>
+        <button class="btn btn-danger" id="btnCancel">Cancel</button>
+        <script>
+            document.getElementById('btnCancel').addEventListener('click', function () {
+                e.preventDefault();
+                location.reload();
+            });
+        </script>
+    </div>
+    <!--</div>-->
+</form>
+
+
+<!-- this JS file used to display relevant select option input fiels as as use's 'entity' selection -->
+<script src="~/Scripts/handleEntitySelection.js"></script>
+<!-- this JS file handle everything reletad 'btnAdd' button -->
+<script src="~/Scripts/addButton.js"></script>
+<!-- this JS file used to 
+    1)control the number of floating points user can add to SNF, FAT values
+    2)handling inputs of 'FAT' and 'SNF'
+    3)enable user to navigate by KeyBoard keys -->
+<script src="~/Scripts/remainingScripts.js"></script>
+
+    </main>
+
+    <footer class="border-top footer text-muted mt-2">
+        <div class="container small">
+            &copy; 2025 - MilkApp
+        </div>
+    </footer>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
