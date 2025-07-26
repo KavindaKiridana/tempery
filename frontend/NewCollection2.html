@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Milk Collection Management</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      html {
+        font-size: 12px !important; /* Default is usually 16px */
+      }
+      :root {
+        --primary-color: #2563eb;
+        --success-color: #059669;
+        --warning-color: #d97706;
+        --danger-color: #dc2626;
+        --light-bg: #f8fafc;
+        --border-color: #e2e8f0;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
+        font-size: 14px;
+      }
+
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 15px;
+      }
+
+      .page-header {
+        background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .page-header h1 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+      }
+
+      .alert {
+        border: none;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 15px;
+        box-shadow: var(--shadow);
+      }
+
+      .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+      }
+
+      .form-section {
+        margin-bottom: 20px;
+      }
+
+      .form-section-title {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .form-label {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+        font-size: 0.875rem;
+      }
+
+      .form-control,
+      .form-select {
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+        border: none;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+      }
+
+      .btn-success {
+        background-color: var(--success-color);
+      }
+
+      .btn-warning {
+        background-color: var(--warning-color);
+      }
+
+      .btn-danger {
+        background-color: var(--danger-color);
+      }
+
+      .entity-selection {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+      }
+
+      .form-check {
+        margin: 0;
+      }
+
+      .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .form-check-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-left: 6px;
+      }
+
+      .input-group-compact {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stats-card {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        border: 1px solid #0284c7;
+        border-radius: 8px;
+        padding: 15px;
+      }
+
+      .stats-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 0.875rem;
+      }
+
+      .stats-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .stats-label {
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .stats-value {
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .table-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+      }
+
+      .table-header {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .table-header h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .table {
+        margin: 0;
+        font-size: 0.875rem;
+      }
+
+      .table th {
+        background-color: #f8fafc;
+        border-color: var(--border-color);
+        font-weight: 600;
+        color: #374151;
+        padding: 12px 8px;
+        font-size: 0.8rem;
+      }
+
+      .table td {
+        padding: 10px 8px;
+        border-color: var(--border-color);
+        vertical-align: middle;
+      }
+
+      .compact-grid {
+        display: grid;
+        gap: 15px;
+      }
+
+      /* Responsive Design */
+      @media (min-width: 768px) {
+        .compact-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (min-width: 1200px) {
+        .compact-grid {
+          grid-template-columns: 2fr 1fr;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .main-container {
+          padding: 10px;
+        }
+
+        .page-header {
+          padding: 15px;
+          margin-bottom: 15px;
+        }
+
+        .page-header h1 {
+          font-size: 1.5rem;
+        }
+
+        .form-card {
+          padding: 15px;
+        }
+
+        .entity-selection {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .input-group-compact {
+          grid-template-columns: 1fr;
+        }
+
+        .table-responsive {
+          font-size: 0.75rem;
+        }
+
+        .btn {
+          font-size: 0.8rem;
+          padding: 6px 12px;
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        padding: 15px 20px;
+        background-color: #f8fafc;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .farmer-input-section {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+      }
+
+      .apply-all-section {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1><i class="fas fa-tint icon"></i> Milk Collection Management</h1>
+      </div>
+
+      <!-- Alert Messages -->
+      <div class="alert alert-success" style="display: none" id="successAlert">
+        Success message here
+      </div>
+      <div class="alert alert-danger" style="display: none" id="errorAlert">
+        Error message here
+      </div>
+      <div class="alert alert-warning" style="display: none" id="noteAlert">
+        Note message here
+      </div>
+
+      <form method="post" id="collectionForm">
+        <input type="hidden" id="recordsJson" name="recordsJson" />
+
+        <div class="compact-grid">
+          <!-- Left Column - Form Inputs -->
+          <div>
+            <!-- Basic Information -->
+            <div class="form-card">
+              <div class="form-section-title">
+                <i class="fas fa-info-circle icon"></i>
+                Basic Information
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Center</label>
+                  <select
+                    class="form-select"
+                    name="SelectedCenterId"
+                    id="SelectedCenterId"
+                  >
+                    <option disabled selected>-- Select Center --</option>
+                    <option value="1">Center 1</option>
+                    <option value="2">Center 2</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-control" id="inputDate" />
+                </div>
+              </div>
+
+              <div class="row g-3 mt-2">
+                <div class="col-md-6">
+                  <label class="form-label">Entity Type</label>
+                  <div class="entity-selection">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="entity"
+                        id="societies"
+                      />
+                      <label class="form-check-label" for="societies"
+                        >Societies</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="entity"
+                        id="collectors"
+                      />
+                      <label class="form-check-label" for="collectors"
+                        >Collectors</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="entity"
+                        id="directFarmers"
+                      />
+                      <label class="form-check-label" for="directFarmers"
+                        >Direct Farmers</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Session</label>
+                  <select class="form-select" id="morEveSelect">
+                    <option value="Morning">Morning</option>
+                    <option value="Evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Entity Selection Inputs -->
+              <div
+                id="societySelection"
+                style="display: none; margin-top: 15px"
+              >
+                <label class="form-label">Select Society</label>
+                <input
+                  class="form-control"
+                  list="societyDataList"
+                  id="societySelectionInput"
+                  placeholder="Search Society..."
+                  autocomplete="off"
+                />
+                <datalist id="societyDataList">
+                  <option value="S001">Society 1</option>
+                  <option value="S002">Society 2</option>
+                </datalist>
+              </div>
+
+              <div
+                id="collectorSelection"
+                style="display: none; margin-top: 15px"
+              >
+                <label class="form-label">Select Collector</label>
+                <input
+                  class="form-control"
+                  list="collectorsDatalist"
+                  id="collectorSelectionInput"
+                  placeholder="Search Collector..."
+                  autocomplete="off"
+                />
+                <datalist id="collectorsDatalist">
+                  <option value="C001">Collector 1</option>
+                  <option value="C002">Collector 2</option>
+                </datalist>
+              </div>
+            </div>
+
+            <!-- Apply All Section -->
+            <div class="form-card">
+              <div class="apply-all-section">
+                <div class="form-section-title" style="margin-bottom: 10px">
+                  <i class="fas fa-magic icon"></i>
+                  Apply to All Records
+                </div>
+                <div class="input-group-compact">
+                  <div>
+                    <label class="form-label">FAT</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      class="form-control"
+                      id="inputFATAll"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label">SNF</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      class="form-control"
+                      id="inputSNFAll"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Individual Record Input -->
+              <div class="farmer-input-section">
+                <div class="form-section-title" style="margin-bottom: 10px">
+                  <i class="fas fa-user icon"></i>
+                  Add Individual Record
+                </div>
+
+                <div class="row g-2 mb-3">
+                  <div class="col-12">
+                    <label class="form-label">Farmer</label>
+                    <input
+                      list="farmersList"
+                      class="form-control"
+                      placeholder="Search Farmer..."
+                      id="inputFarmer"
+                      autocomplete="off"
+                    />
+                    <datalist id="farmersList">
+                      <option value="F001">Farmer 1</option>
+                      <option value="F002">Farmer 2</option>
+                    </datalist>
+                  </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                  <div class="col-4">
+                    <label class="form-label">FAT</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      class="form-control"
+                      id="inputFAT"
+                    />
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label">SNF</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      class="form-control"
+                      id="inputSNF"
+                    />
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label">Quantity (L)</label>
+                    <input type="number" class="form-control" id="inputQt" />
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-primary" id="btnAdd">
+                    <i class="fas fa-plus"></i> Add
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="btnClear">
+                    <i class="fas fa-eraser"></i> Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column - Summary Stats -->
+          <div>
+            <div class="form-card">
+              <div class="form-section-title">
+                <i class="fas fa-chart-bar icon"></i>
+                Collection Summary
+              </div>
+              <div class="stats-card">
+                <div class="stats-item">
+                  <span class="stats-label">Total Quantity:</span>
+                  <span class="stats-value" id="totalQuantity">0 L</span>
+                </div>
+                <div class="stats-item">
+                  <span class="stats-label">FAT Average:</span>
+                  <span class="stats-value" id="fatAverage">0%</span>
+                </div>
+                <div class="stats-item">
+                  <span class="stats-label">SNF Average:</span>
+                  <span class="stats-value" id="snfAverage">0%</span>
+                </div>
+                <div class="stats-item">
+                  <span class="stats-label">Records Count:</span>
+                  <span class="stats-value" id="recordsCount">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Records Table -->
+        <div class="table-container">
+          <div class="table-header">
+            <h3><i class="fas fa-table icon"></i> Collected Records</h3>
+          </div>
+
+          <div class="table-responsive">
+            <table id="recordsTable" class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Center</th>
+                  <th>Parent</th>
+                  <th>Date</th>
+                  <th>Session</th>
+                  <th>Code</th>
+                  <th>Farmer</th>
+                  <th>FAT</th>
+                  <th>SNF</th>
+                  <th>Quantity</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Records will be added here dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="action-buttons">
+            <button type="button" class="btn btn-success" id="btnSave">
+              <i class="fas fa-save"></i> Save Collection
+            </button>
+            <button type="button" class="btn btn-danger" id="btnCancel">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Entity selection handling
+      document.addEventListener("DOMContentLoaded", function () {
+        const entityRadios = document.querySelectorAll('input[name="entity"]');
+        const societySelection = document.getElementById("societySelection");
+        const collectorSelection =
+          document.getElementById("collectorSelection");
+
+        entityRadios.forEach((radio) => {
+          radio.addEventListener("change", function () {
+            // Hide all selections first
+            societySelection.style.display = "none";
+            collectorSelection.style.display = "none";
+
+            // Show relevant selection
+            if (this.id === "societies") {
+              societySelection.style.display = "block";
+            } else if (this.id === "collectors") {
+              collectorSelection.style.display = "block";
+            }
+          });
+        });
+
+        // Set today's date
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("inputDate").value = today;
+
+        // Sample data handling for demo
+        let records = [];
+        let recordId = 1;
+
+        // Add record functionality
+        document
+          .getElementById("btnAdd")
+          .addEventListener("click", function () {
+            const farmer = document.getElementById("inputFarmer").value;
+            const fat = document.getElementById("inputFAT").value;
+            const snf = document.getElementById("inputSNF").value;
+            const quantity = document.getElementById("inputQt").value;
+            const date = document.getElementById("inputDate").value;
+            const session = document.getElementById("morEveSelect").value;
+
+            if (farmer && fat && snf && quantity) {
+              const record = {
+                id: recordId++,
+                center: "Center 1",
+                parent: "Society/Collector",
+                date: date,
+                session: session,
+                code: farmer,
+                farmer: farmer,
+                fat: parseFloat(fat),
+                snf: parseFloat(snf),
+                quantity: parseFloat(quantity),
+              };
+
+              records.push(record);
+              updateTable();
+              updateSummary();
+              clearInputs();
+            } else {
+              alert("Please fill all required fields");
+            }
+          });
+
+        // Clear inputs
+        function clearInputs() {
+          document.getElementById("inputFarmer").value = "";
+          document.getElementById("inputFAT").value = "";
+          document.getElementById("inputSNF").value = "";
+          document.getElementById("inputQt").value = "";
+        }
+
+        document
+          .getElementById("btnClear")
+          .addEventListener("click", clearInputs);
+
+        // Update table
+        function updateTable() {
+          const tbody = document.querySelector("#recordsTable tbody");
+          tbody.innerHTML = "";
+
+          records.forEach((record) => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                        <td>${record.center}</td>
+                        <td>${record.parent}</td>
+                        <td>${record.date}</td>
+                        <td>${record.session}</td>
+                        <td>${record.code}</td>
+                        <td>${record.farmer}</td>
+                        <td>${record.fat}%</td>
+                        <td>${record.snf}%</td>
+                        <td>${record.quantity}L</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRecord(${record.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+          });
+        }
+
+        // Remove record
+        window.removeRecord = function (id) {
+          records = records.filter((record) => record.id !== id);
+          updateTable();
+          updateSummary();
+        };
+
+        // Update summary
+        function updateSummary() {
+          const totalQuantity = records.reduce(
+            (sum, record) => sum + record.quantity,
+            0
+          );
+          const avgFat =
+            records.length > 0
+              ? records.reduce((sum, record) => sum + record.fat, 0) /
+                records.length
+              : 0;
+          const avgSnf =
+            records.length > 0
+              ? records.reduce((sum, record) => sum + record.snf, 0) /
+                records.length
+              : 0;
+
+          document.getElementById("totalQuantity").textContent =
+            totalQuantity.toFixed(1) + " L";
+          document.getElementById("fatAverage").textContent =
+            avgFat.toFixed(2) + "%";
+          document.getElementById("snfAverage").textContent =
+            avgSnf.toFixed(2) + "%";
+          document.getElementById("recordsCount").textContent = records.length;
+        }
+
+        // Save functionality
+        document
+          .getElementById("btnSave")
+          .addEventListener("click", function () {
+            if (records.length === 0) {
+              alert("Please add at least one record before saving");
+              return;
+            }
+
+            // Here you would typically send the data to the server
+            document.getElementById("recordsJson").value =
+              JSON.stringify(records);
+            alert("Records saved successfully!");
+          });
+
+        // Cancel functionality
+        document
+          .getElementById("btnCancel")
+          .addEventListener("click", function () {
+            if (
+              confirm(
+                "Are you sure you want to cancel? All unsaved data will be lost."
+              )
+            ) {
+              location.reload();
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
