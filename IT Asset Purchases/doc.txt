@@ -1,3 +1,5 @@
+IT Asset Purchases
+#project requriements
 1.  Allocation department could change. It should be changed by someone.
 2.  If the price is lower than 15,000, Manager, IT, CFO.
     As the price, the template should change.
@@ -5,3 +7,121 @@
 3.  After printing the doc, no one can change the doc. No one can delete the doc.
 4.  User table-> UserName, activeStatus, Password
     When editing anyone editing this doc, user's ID should keep as FK on the doc
+5.  All the support documents aren't kept from the system. So no need to keep them on system DB.
+    only when giving them to signin, we need to attach all the support doc with this doc
+6.
+Serial No -> RBIT / 2025 / 0135
+Company ID, year, serial No. or something.
+No need to implement this when PDF saving.
+7.
+For approval, need to have another table.
+Person name, position.
+(for when he signs the doc, not current one)
+8.
+Create by user (who logged when creating)
+Need to have save
+user name / date & time.
+9.
+we need to keep suppeirs on this system
+for this system, we dont care aout the suppleri selection.we got the suppeirs who already selected before comming to this step (it's not the responsibility of IT department)
+
+10. web form (this si the system i need to create)
+"Based on the image of the IT Approval Requisition Form, here is a transcription of all the information, including the handwritten notes:
+
+**Form: IT-PD-01.1**
+**IT Approval Requisition Form**
+**Serial No:** RBIT/2025/0001
+
+* **Date:** (Handwritten: Current date)
+* **Requested By:** (Handwritten: from dropdown)
+* **To get one data table.**
+* **Invoice Company:** (Handwritten: dropdown)
+* **Allocation Department:** (Handwritten: dropdown)
+* **Reason:** (Handwritten: dropdown)
+* **Division Head:** Mr. Asitha Peiris (Handwritten: dropdown)
+* **Could be multiple.**
+
+**Requisition Details**
+
+* **Requirement (item):** (Handwritten: type)
+* **Used by / To whom:** (Handwritten: dropdown)
+* **Purchase Order Supplier:** (Handwritten: type dropdown)
+* **Budgeted:** YES / NO (Handwritten: N/A)
+* **Reserve this but when printing, all the expenses need to put here.**
+* **Existing Item Details (If the item is not a new or new project):**
+    * **Date of Purchase:** N/A
+    * **Make:** N/A
+    * **Serial Number:** N/A
+    * **Warranty:** N/A
+    * **Model:** N/A
+
+**Costing & Configuration (If repair only quotation will be attached)**
+
+* **Description:** (Handwritten: attached, Not Attached)
+* **Quotation:** (Handwritten: (see po))
+* **Configuration Evaluation:**
+* **Cost Breakdown:**
+* **Costing, Configuration & recommendation confirmed by:**
+* **Cost Summary & Recommended Supplier**
+* **Description (Tax...):**
+* **Supplier:** (Table column heading)
+* **Qty:** (Table column heading)
+* **Unit Price:** (Table column heading)
+* **Total - LKR:** (Table column heading)
+    * (Table row, Handwritten: 0)
+    * (Table row, Handwritten: 0)
+    * (Table row, Handwritten: 0)
+* **Total Cost - LKR (without SSC):** (Handwritten: 0.00)
+* **This should be auto calculate.**
+
+**IT Division Comments**
+(Handwritten: Text)
+
+**IT Division Recommendation (with justification)**
+(Handwritten: Text)
+
+**Remarks**
+(Handwritten: Text)
+* **Names from anywhere you need to keep this 3 person.**
+* **3 person -> select option.**
+* **Meen 4 Person.**
+
+* **Manager IT:** Sanjula Bayaweera
+* **CEO:** Mr. Asitha Peiris
+* **MD:** Mr. Shamindra Rajiyah
+* **Signature:** (Handwritten: s)"
+#another 2 requriemts docs r atteched 
+#tell me this er i draw is right or wrong and tell em wht r the attribute on DOcumetsn entity
+
+
+
+
+
+
+ER diagram (i draw now)
+
+Entity: User
+  Attributes:
+    - UserId
+    - UserName
+    - Password
+    - IsActive
+
+Relationship: Create
+  - Between: User and Document
+  - Cardinality: One user can create many documents (1 to n)
+  - need to keep 'savedDateTime' attribute on this relationship
+
+Entity: Document
+ 
+Relationship:SignedBy
+  - Between: Autherizer and Document
+  - Cardinality: One Autherizer can create many documents.One ducuments is signed by many autherizers (m to n)
+
+Entity: Autherizer
+  Attributes:
+     - Id
+     - Name
+     - PositionWhenHeSignedIt
+     - DateTime
+#tell me my er diagram is right or wrong, when should i modify.and tell em whtr the attributes od Document entity
