@@ -1,0 +1,7 @@
+1.  Allocation department could change. It should be changed by someone.
+2.  If the price is lower than 15,000, Manager, IT, CFO.
+    As the price, the template should change.
+    If price is more than 15,000, Manager, IT, CFO, MD.
+3.  After printing the doc, no one can change the doc. No one can delete the doc.
+4.  User table-> UserName, activeStatus, Password
+    When editing anyone editing this doc, user's ID should keep as FK on the doc
