@@ -8,6 +8,10 @@ Company
 Department
  -DepartmentId int PK
  -Name varchar
+Supplier
+ -SupplierId int auto increment PK
+ -Name varchar
+ -Currency varchar
 RequestedItem
  -RequestedItemId int auto increment PK
  -Cost decimal
@@ -28,8 +32,17 @@ SignedBy
  -Position varchar 
 Document
  -DocumentId int auto increment PK
+ -SupplierId int FK
  -ReasonId int FK
  -CompanyId int FK
  -DepartmentId int FK
  -UserId int FK (edited user)
+ -DepartmentHead int FK (department Head user, User.UserId)
  -SavedTime datetime auto increment
+ -SerialNo varchar
+ -Status varchar ('pending','approved','rejected')
+ -ITDivisionComment varchar
+ -ITDivisionRecommendation varchar
+ -Remarks varchar
+ -TotalCost decimal
+ -Budgeted bool
