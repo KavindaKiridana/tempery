@@ -16,5 +16,8 @@ User
  -UserId int auto increment
  -Password varchar
  -IsActive bool
- -
+ -UserName varchar
+ -FullName varchar
+ -IsHeadOrNot bool
+ -IsAuther varchar ('null','IT Manager','CEO','MD')
 Document
