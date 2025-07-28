@@ -1,0 +1,20 @@
+
+Reason
+ -ReasonId int auto increment
+ -Name varchar
+Company
+ -CompanyId int auto increment
+ -Name varchar
+Department
+ -DepartmentId int
+ -Name varchar
+RequestedItem
+ -RequestedItemId int auto increment
+ -Cost decimal
+ -Description varchar
+User
+ -UserId int auto increment
+ -Password varchar
+ -IsActive bool
+ -
+Document
