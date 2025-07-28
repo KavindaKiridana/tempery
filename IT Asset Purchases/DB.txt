@@ -14,9 +14,11 @@ Supplier
  -Currency varchar
 RequestedItem
  -RequestedItemId int auto increment PK
- -Cost decimal
+ -UnitPrice decimal
+ -Qty int 
  -Description varchar
  -DocumentID int FK
+ -SupplierId int FK
 User
  -UserId int auto increment PK
  -Password varchar
@@ -32,7 +34,6 @@ SignedBy
  -Position varchar 
 Document
  -DocumentId int auto increment PK
- -SupplierId int FK
  -ReasonId int FK
  -CompanyId int FK
  -DepartmentId int FK
@@ -46,3 +47,5 @@ Document
  -Remarks varchar
  -TotalCost decimal
  -Budgeted bool
+ -ExistingItemDetails* (DateOfPurchase,Make,SerialNo,Warranty,Model)  /////////////
+ -Costing&Configuration* bool (Quotation,Configuration,CostBeakdown)
