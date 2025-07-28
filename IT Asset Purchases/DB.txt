@@ -1,23 +1,35 @@
-
 Reason
- -ReasonId int auto increment
+ -ReasonId int auto increment PK
  -Name varchar
 Company
- -CompanyId int auto increment
+ -CompanyId int auto increment PK
  -Name varchar
+ -Flag varchar
 Department
- -DepartmentId int
+ -DepartmentId int PK
  -Name varchar
 RequestedItem
- -RequestedItemId int auto increment
+ -RequestedItemId int auto increment PK
  -Cost decimal
  -Description varchar
+ -DocumentID int FK
 User
- -UserId int auto increment
+ -UserId int auto increment PK
  -Password varchar
  -IsActive bool
  -UserName varchar
  -FullName varchar
  -IsHeadOrNot bool
- -IsAuther varchar ('null','IT Manager','CEO','MD')
+ -IsAuthorizer  varchar ('null','IT Manager','CEO','MD')
+SignedBy
+ -DocumentID int FK
+ -UserId int FK
+ -DateTime datetime auto increment
+ -Position varchar 
 Document
+ -DocumentId int auto increment PK
+ -ReasonId int FK
+ -CompanyId int FK
+ -DepartmentId int FK
+ -UserId int FK (edited user)
+ -SavedTime datetime auto increment
