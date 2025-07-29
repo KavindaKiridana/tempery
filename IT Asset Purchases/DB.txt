@@ -33,6 +33,14 @@ User
  -IsHeadOrNot bool
  -IsAuthorizer  varchar('Unauthorizer','IT Manager','CEO','MD')    
 
+ Template
+  -TemplateId int auto increment
+  -Description varchar null able
+  -IsMDSign bool (Description->if total cost larger than 15000 then MD requried to sign and this attribute would be 'true')
+  -ITManagerId int (Description->IT Manager user's UserId from User table)
+  -CEOId int (Description->CEO user's UserId from User table)
+  -MDId int null able (Description->MD user's UserId from User table,if IsMDSign=false then this would null value)
+
 SignedBy
  -DocumentID int FK
  -UserId int FK
@@ -62,3 +70,4 @@ Document (Description->'EID' means 'ExistingItemDetails')
  -Quotation bool
  -Configuration bool
  -CostBeakdown bool
+
