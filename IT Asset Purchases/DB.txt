@@ -12,8 +12,8 @@ Supplier
  -SupplierId int auto increment PK
  -Name varchar
  -Currency varchar
-RequestedItem
- -RequestedItemId int auto increment PK
+RequestedItemPayments
+ -RequestedItemPaymentsId int auto increment PK
  -UnitPrice decimal
  -Qty int 
  -Description varchar
