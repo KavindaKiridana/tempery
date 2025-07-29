@@ -1,6 +1,6 @@
 -- Create Database
-CREATE DATABASE ITAssetRequest;
-GO
+-- CREATE DATABASE ITAssetRequest;
+-- GO
 
 -- Use the database
 USE ITAssetRequest;
@@ -16,7 +16,7 @@ CREATE TABLE Reason (
 CREATE TABLE Company (
     CompanyId INT IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(255) NOT NULL,
-    Flag VARCHAR(255)
+    Flag VARCHAR(255) NOT NULL
 );
 
 -- Create Department table
@@ -110,10 +110,6 @@ CREATE TABLE SignedBy (
     FOREIGN KEY (UserId) REFERENCES [User](UserId)
 );
 
--- Add indexes for better performance
-CREATE INDEX IX_Document_Status ON Document(Status);
-CREATE INDEX IX_Document_SavedTime ON Document(SavedTime);
-CREATE INDEX IX_RequestedItemPayments_DocumentID ON RequestedItemPayments(DocumentID);
-CREATE INDEX IX_SignedBy_DocumentID ON SignedBy(DocumentID);
+
 
 PRINT 'ITAssetRequest database and tables created successfully!';
