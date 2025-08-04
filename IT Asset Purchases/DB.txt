@@ -1,0 +1,73 @@
+Reason
+ -ReasonId int auto increment PK
+ -Name varchar
+
+Company
+ -CompanyId int auto increment PK
+ -Name varchar
+ -Flag varchar
+
+Department
+ -DepartmentId int PK
+ -Name varchar
+
+Supplier
+ -SupplierId int auto increment PK
+ -Name varchar
+ -Currency varchar
+
+RequestedItemPayments
+ -RequestedItemPaymentsId int auto increment PK
+ -UnitPrice decimal
+ -Qty int 
+ -Description varchar(500)
+ -DocumentID int FK
+ -SupplierId int FK
+
+User
+ -UserId int auto increment PK
+ -Password varchar
+ -IsActive bool
+ -UserName varchar
+ -FullName varchar
+ -IsHeadOrNot bool
+ -IsAuthorizer  varchar('Unauthorizer','IT Manager','CEO','MD')    
+
+ Template
+  -TemplateId int auto increment
+  -Description varchar null able
+  -IsMDSign bool (Description->if total cost larger than 15000 then MD requried to sign and this attribute would be 'true')
+  -ITManagerId int (Description->IT Manager user's UserId from User table)
+  -CEOId int (Description->CEO user's UserId from User table)
+  -MDId int null able (Description->MD user's UserId from User table,if IsMDSign=false then this would null value)
+
+SignedBy
+ -DocumentID int FK
+ -UserId int FK
+ -DateTime datetime auto increment
+ -Position varchar 
+
+Document (Description->'EID' means 'ExistingItemDetails')
+ -DocumentId int auto increment PK
+ -ReasonId int FK
+ -CompanyId int FK
+ -DepartmentId int FK
+ -UserId int FK (Description->'edited user')
+ -DepartmentHead int FK (Description->'department Head user')
+ -SavedTime datetime auto increment
+ -SerialNo varchar
+ -Status varchar ('pending','approved','rejected')
+ -ITDivisionComment text
+ -ITDivisionRecommendation text
+ -Remarks text
+ -TotalCost decimal
+ -Budgeted bool
+ -EIDDateOfPurchase datetime
+ -EIDMake varchar
+ -EIDSerialNo varchar
+ -EIDWarranty varchar
+ -EIDModel varchar
+ -Quotation bool
+ -Configuration bool
+ -CostBeakdown bool
+

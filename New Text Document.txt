@@ -1,0 +1,97 @@
+#write the code as following requreiemnt
+#RequestedItemPayments table 
+RequestedItemPaymentsId	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+UnitPrice	decimal	no	9	18   	2    	no	(n/a)	(n/a)	NULL
+Qty	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+Description	varchar	no	500	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+DocumentID	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+SupplierId	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+#Home.aspx file
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="GridView3.Home" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <!-- Cost Summary Table -->
+        <div class="table-responsive">
+            <asp:GridView ID="GridView1" runat="server"
+                AutoGenerateColumns="False"
+                CssClass="table table-bordered table-hover"
+                HeaderStyle-CssClass="thead-dark"
+                ShowFooter="True"
+                OnRowDataBound="GridView1_RowDataBound">
+                <Columns>
+                    <asp:TemplateField HeaderText="Supplier">
+                        <ItemTemplate>
+                            <asp:TextBox ID="txtSupplier" runat="server"
+                                CssClass="form-control border-0"
+                                Text='<%# Bind("Supplier") %>'
+                                onchange="calculateTotal(this)"></asp:TextBox>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                            <span class="font-weight-bold">Total Cost - USD</span>
+                        </FooterTemplate>
+                    </asp:TemplateField>
+
+                    <asp:TemplateField HeaderText="Description">
+                        <ItemTemplate>
+                            <asp:TextBox ID="txtDescription" runat="server"
+                                CssClass="form-control border-0"
+                                Text='<%# Bind("Description") %>'></asp:TextBox>
+                        </ItemTemplate>
+                        <FooterTemplate></FooterTemplate>
+                    </asp:TemplateField>
+
+                    <asp:TemplateField HeaderText="Qty">
+                        <ItemTemplate>
+                            <asp:TextBox ID="txtQty" runat="server"
+                                CssClass="form-control border-0 text-center"
+                                Text='<%# Bind("Qty") %>'
+                                TextMode="Number"
+                                oninput="calculateRowTotal(this)"></asp:TextBox>
+                        </ItemTemplate>
+                        <FooterTemplate></FooterTemplate>
+                    </asp:TemplateField>
+
+                    <asp:TemplateField HeaderText="Unit Price">
+                        <ItemTemplate>
+                            <asp:TextBox ID="txtUnitPrice" runat="server"
+                                CssClass="form-control border-0 text-right"
+                                Text='<%# Bind("UnitPrice") %>'
+                                TextMode="Number"
+                                oninput="calculateRowTotal(this)"></asp:TextBox>
+                        </ItemTemplate>
+                        <FooterTemplate></FooterTemplate>
+                    </asp:TemplateField>
+
+                    <asp:TemplateField HeaderText="Total - USD">
+                        <ItemTemplate>
+                            <asp:Label ID="lblTotal" runat="server"
+                                CssClass="form-control-plaintext text-right font-weight-bold"
+                                Text='<%# Bind("Total") %>'></asp:Label>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                            <asp:Label ID="lblGrandTotal" runat="server"
+                                CssClass="font-weight-bold text-right"
+                                Text="0.00"></asp:Label>
+                        </FooterTemplate>
+                    </asp:TemplateField>
+                </Columns>
+            </asp:GridView>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
+    </script>
+   
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" />
+    </form>
+</body>
+</html>
+#at this page,when user entering data to gridview program shouldnt allow user to enter 'e' into 'Qty'and 'Unit Price' columns.(no need to giving alerts as u cant entering 'e' to this cells)
+#user doent allow fill halfly on any record (meaning :if user filled something on first raw's Supplier then he must fill all the other cells before before click submit, )if he click sumbit after haflly filling them,program must sent an alert to fill all the other cells and prevent the sunmitting process.then either he need to fill all the other cells or he need to remove every thing he halfly filled
+#after he filling any record completely program must automatically calculate the 'Total - USD' column (Total - USD=Qty*Unit Price)

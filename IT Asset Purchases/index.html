@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAPEX Form - FMCG</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+  </head>
+  <body>
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="text-center mb-4">CAPEX Form</h2>
+          <!-- Main Form -->
+          <form class="bg-light p-4 rounded shadow-sm">
+            <!-- Header Section -->
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Requested By</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="Sanjula Dayaweera"
+                  readonly
+                />
+              </div>
+            </div>
+
+            <!-- Company and Department -->
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Invoice Company</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Allocation Department</label>
+                <select class="form-select">
+                  <option value="">Select Department</option>
+                  <option>Boiler</option>
+                  <option>Coconut Water</option>
+                  <option>Corporate</option>
+                  <option>DC</option>
+                  <option>Engineering</option>
+                  <option>Finance</option>
+                  <option>Food Services</option>
+                  <option>H&P</option>
+                  <option>HR & Admin</option>
+                  <option>IT</option>
+                  <option>Internal Audit</option>
+                  <option>Legal</option>
+                  <option>Loading/Shell crushing</option>
+                  <option>Management</option>
+                  <option>Marketing</option>
+                  <option>Milk Procurement</option>
+                  <option>Plantation</option>
+                  <option>Procurement</option>
+                  <option>Production</option>
+                  <option>Propaganda</option>
+                  <option>Properties</option>
+                  <option>Quality Assurance</option>
+                  <option>R & D</option>
+                  <option>Sales</option>
+                  <option>Sales Admin</option>
+                  <option>Secretarial</option>
+                  <option>Shipping</option>
+                  <option>Stores</option>
+                  <option>Supply Chain</option>
+                  <option>Tea Buying</option>
+                  <option>Unloading</option>
+                  <option>Warehouse & Distribution</option>
+                  <option>Morden Trade</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Reason and Division Head -->
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Reason</label>
+                <textarea class="form-control" rows="2"></textarea>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Division Head</label>
+                <input type="text" class="form-control" />
+              </div>
+            </div>
+
+            <!-- Requisition Details -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>Requisition Details</h5>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Requirement (Item)</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Used by / To whom</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="Group HRIS"
+                  readonly
+                />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Purchase Order Supplier</label>
+                <select class="form-select">
+                  <option>YES</option>
+                  <option selected>NO</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Existing Item Details -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>
+                  Existing Item Details (If the item is not a new/ new project)
+                </h5>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Date of Purchase</label>
+                <input type="date" class="form-control" />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Warranty</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Make</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Model</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Serial Number</label>
+                <input type="text" class="form-control" />
+              </div>
+            </div>
+
+            <!-- Costing & Configuration -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>
+                  Costing & Configuration (If repair only quotation will be
+                  attached)
+                </h5>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Warranty</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Make</label>
+                <input type="text" class="form-control" />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Model</label>
+                <input type="text" class="form-control" />
+              </div>
+            </div>
+
+            <!-- Cost Summary Table -->
+
+            <!-- Confirmation -->
+
+            <!-- IT Division Comments -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>IT Division Comments</h5>
+                <textarea class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- IT Division Recommendation -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>IT Division Recommendation (with justification)</h5>
+                <textarea class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- Remarks -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>Remarks</h5>
+                <textarea class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <h5>Approvals</h5>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Manager IT</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="Sanjula Dayaweera"
+                  readonly
+                />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">CEO</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="Nishantha Jayasooriya"
+                  readonly
+                />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">CEO</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="Mr. Asitha Peiris"
+                  readonly
+                />
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">MD</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="Mr. Shamindra Rajiyah"
+                  readonly
+                />
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button class="btn btn-primary me-md-2" type="submit">
+                Submit
+              </button>
+              <button class="btn btn-secondary" type="reset">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
