@@ -40,7 +40,7 @@ CREATE TABLE [User] (
     UserName VARCHAR(255) NOT NULL,
     FullName VARCHAR(255) NOT NULL,
     IsHeadOrNot BIT NOT NULL,
-    IsAuthorizer VARCHAR(50) CHECK (IsAuthorizer IN ('Unauthorizer', 'IT Manager', 'CEO', 'MD'))
+    IsAuthorizer VARCHAR(50) CHECK (IsAuthorizer IN ('Unauthorizer', 'IT Manager', 'CEO', 'MD','Editor'))
 );
 
 -- Create Template table
