@@ -1,22 +1,3 @@
-#write the complete keyboardNavigation.js file for me
-#this function should perform this requriement below
-1)when this page loading, initially the cursor should be on rblEntity's Society option.user should be able to navigate between rblEntity options using arrow keys.
-when user click enter key any of option, this particuler rblEntity should be selected and the cursor should automatically moved into 'ddlCollector'
-2)when user click space key,ddlCollector's option list and search bar should be visible and user should be able to select any option either using arrow keys or typing on search bar
-and finally when user click enter key to submit it,cursor automatically moved into 'txtDate'
-3)after user click enter key at on any date, cursor should automatically moved into 'ddlMorEve'
-4)on 'ddlMorEve' input, if user 
-
-
-txtFATAll
-txtSNFAll
-ddlFarmers
-txtFAT
-txtSNF
-txtQuantity
-btnAdd
-btnCancel
-
 <%@ Page Title="Contact" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Contact.aspx.cs" Inherits="MilkWeb.Contact" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
@@ -25,44 +6,113 @@ btnCancel
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
         <script type="text/javascript" src="keyboardNavigation.js"></script>
 
- <!-- Select2 initialization script -->
- <script type="text/javascript">
-     $(document).ready(function () {
-         // Initialize Select2 on the collector dropdown
-         $("[id*=ddlCollector]").select2({
-             placeholder: "Search and select a collector...",
-             allowClear: true
-         });
+    <!-- Select2 initialization script -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Initialize Select2 on the collector dropdown
+            $("[id*=ddlCollector]").select2({
+                placeholder: "Search and select a collector...",
+                allowClear: true
+            });
 
-         // Initialize Select2 on the farmers dropdown
-         $("[id*=ddlFarmers]").select2({
-             placeholder: "Search and select a farmer...",
-             allowClear: true
-         });
+            // Initialize Select2 on the farmers dropdown
+            $("[id*=ddlFarmers]").select2({
+                placeholder: "Search and select a farmer...",
+                allowClear: true
+            });
 
-         // Handle the change event for Select2 - Collector
-         $("[id*=ddlCollector]").on('select2:select', function (e) {
-             // Trigger the server-side postback manually
-             __doPostBack(this.name, '');
-         });
+            // Handle the change event for Select2 - Collector
+            $("[id*=ddlCollector]").on('select2:select', function (e) {
+                // Trigger the server-side postback manually
+                __doPostBack(this.name, '');
+            });
 
-         // Handle the change event for Select2 - Farmers
-         $("[id*=ddlFarmers]").on('select2:select', function (e) {
-             // Trigger the server-side postback manually
-             __doPostBack(this.name, '');
-         });
+            // Handle the change event for Select2 - Farmers
+            $("[id*=ddlFarmers]").on('select2:select', function (e) {
+                // Trigger the server-side postback manually
+                __doPostBack(this.name, '');
+            });
 
-         // Auto-sync logic - moved inside document ready to ensure elements exist
-         initializeAutoSync();
-     });
-</script>
+            // Auto-sync logic - moved inside document ready to ensure elements exist
+            initializeAutoSync();
+        });
 
-   #i remove some JS functions here
+        // Validate float input to allow only one decimal place
+        function validateFloat(input) {
+            let value = input.value;
+            if (value === "") return;
+
+            const regex = /^\d+(\.\d{0,1})?$/;
+            if (!regex.test(value)) {
+                input.value = value.slice(0, -1);
+            }
+        }
+
+        //validate Qty input
+        function restrictToNumbers(input) {
+            // Remove any non-numeric characters
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        // Auto-sync logic function
+        function initializeAutoSync() {
+            // Independent sync flags for each pair
+            let fatSyncEnabled = true;
+            let snfSyncEnabled = true;
+
+            const txtFATAll = document.getElementById('<%= txtFATAll.ClientID %>');
+            const txtFAT = document.getElementById('<%= txtFAT.ClientID %>');
+            const txtSNFAll = document.getElementById('<%= txtSNFAll.ClientID %>');
+            const txtSNF = document.getElementById('<%= txtSNF.ClientID %>');
+
+            if (txtFATAll && txtFAT && txtSNFAll && txtSNF) {
+                // Sync FAT from All → Individual
+                txtFATAll.addEventListener('input', function () {
+                    if (fatSyncEnabled) {
+                        txtFAT.value = this.value;
+                    }
+                });
+
+                // Sync SNF from All → Individual
+                txtSNFAll.addEventListener('input', function () {
+                    if (snfSyncEnabled) {
+                        txtSNF.value = this.value;
+                    }
+                });
+
+                // If user edits FAT manually, stop syncing
+                txtFAT.addEventListener('input', function () {
+                    fatSyncEnabled = false;
+                });
+
+                // If user edits SNF manually, stop syncing
+                txtSNF.addEventListener('input', function () {
+                    snfSyncEnabled = false;
+                });
+
+                // If user clears FAT, re-enable sync
+                txtFAT.addEventListener('blur', function () {
+                    if (!this.value) {
+                        fatSyncEnabled = true;
+                        this.value = txtFATAll.value;
+                    }
+                });
+
+                // If user clears SNF, re-enable sync
+                txtSNF.addEventListener('blur', function () {
+                    if (!this.value) {
+                        snfSyncEnabled = true;
+                        this.value = txtSNFAll.value;
+                    }
+                });
+            }
+        }
+    </script>
 
     <main aria-labelledby="title">
         <div style="padding: 10px;">
             <%--Error Alert & view to previous collection records--%>
-            <asp:Panel ID="Panel1" runat="server" BorderStyle="Solid" BorderWidth="1px" Width="100%" Style="margin-bottom: 10px; padding: 0 5px 5px 5px;;">
+            <asp:Panel ID="Panel1" runat="server" BorderStyle="Solid" BorderWidth="1px" Width="100%" Style="margin-bottom: 10px; padding: 0 5px 5px 5px;">
                  <asp:Label ID="lblError" runat="server"></asp:Label>
             </asp:Panel>
 
@@ -246,8 +296,86 @@ btnCancel
                 </asp:Panel>
             </asp:Panel>
 
-            #i removed a gridview part here
+<%-- GridView/Table Section --%>
+<asp:Panel ID="Panel2" runat="server" BorderStyle="Solid" BorderWidth="1px" Width="100%" Style="background-color: #f0f0f0; margin-bottom: 10px;">
+    <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" DataKeyNames="ID" DataSourceID="SqlDataSource1" AllowPaging="True">
+        <Columns>
+            <asp:CommandField ShowDeleteButton="True" />
+            <asp:BoundField DataField="CCode" HeaderText="CCode" SortExpression="CCode" />
+            <asp:BoundField DataField="FarmerCode" HeaderText="FarmerCode" SortExpression="FarmerCode" />
+            <asp:BoundField DataField="OldCode" HeaderText="OldCode" SortExpression="OldCode" />
+            <asp:BoundField DataField="Parent" HeaderText="Parent" SortExpression="Parent" />
+            <asp:BoundField DataField="DateOf" HeaderText="DateOf" SortExpression="DateOf" DataFormatString="{0:yyyy-MM-dd}" />
+            <asp:BoundField DataField="TimeOf" HeaderText="TimeOf" SortExpression="TimeOf" />
+            <asp:BoundField DataField="SNF" HeaderText="SNF" SortExpression="SNF" />
+            <asp:BoundField DataField="FAT" HeaderText="FAT" SortExpression="FAT" />
+            <asp:BoundField DataField="Qty" HeaderText="Qty" SortExpression="Qty" />
+            <asp:BoundField DataField="ID" HeaderText="ID" InsertVisible="False" ReadOnly="True" SortExpression="ID" Visible="False"/>
+        </Columns>
+    </asp:GridView>
+</asp:Panel>
+            <asp:SqlDataSource ID="SqlDataSource1" runat="server" 
+                ConflictDetection="CompareAllValues" 
+                ConnectionString="<%$ ConnectionStrings:MilkWeb %>" 
+                DeleteCommand="DELETE FROM [tblDWebTemp] WHERE [ID] = @original_ID AND [CCode] = @original_CCode AND [FarmerCode] = @original_FarmerCode AND [OldCode] = @original_OldCode AND [Parent] = @original_Parent AND [DateOf] = @original_DateOf AND [TimeOf] = @original_TimeOf AND [SNF] = @original_SNF AND [FAT] = @original_FAT AND [Qty] = @original_Qty" 
+                InsertCommand="INSERT INTO [tblDWebTemp] ([CCode], [FarmerCode], [OldCode], [Parent], [DateOf], [TimeOf], [SNF], [FAT], [Qty]) VALUES (@CCode, @FarmerCode, @OldCode, @Parent, @DateOf, @TimeOf, @SNF, @FAT, @Qty)" 
+                OldValuesParameterFormatString="original_{0}" 
+                SelectCommand="SELECT [CCode], [FarmerCode], [OldCode], [Parent],  CONVERT(DATE, [DateOf]) AS DateOf, [TimeOf], [SNF], [FAT], [Qty], [ID] FROM [tblDWebTemp] WHERE (([UserId] = @UserId) AND ([SavedTime] = @SavedTime)) ORDER BY [ID] DESC" 
+                UpdateCommand="UPDATE [tblDWebTemp] SET [CCode] = @CCode, [FarmerCode] = @FarmerCode, [OldCode] = @OldCode, [Parent] = @Parent, [DateOf] = @DateOf, [TimeOf] = @TimeOf, [SNF] = @SNF, [FAT] = @FAT, [Qty] = @Qty WHERE [ID] = @original_ID AND [CCode] = @original_CCode AND [FarmerCode] = @original_FarmerCode AND [OldCode] = @original_OldCode AND [Parent] = @original_Parent AND [DateOf] = @original_DateOf AND [TimeOf] = @original_TimeOf AND [SNF] = @original_SNF AND [FAT] = @original_FAT AND [Qty] = @original_Qty">
+                <DeleteParameters>
+                    <asp:Parameter Name="original_ID" Type="Int32" />
+                    <asp:Parameter Name="original_CCode" Type="Int32" />
+                    <asp:Parameter Name="original_FarmerCode" Type="String" />
+                    <asp:Parameter Name="original_OldCode" Type="String" />
+                    <asp:Parameter Name="original_Parent" Type="String" />
+                    <asp:Parameter Name="original_DateOf" Type="String" />
+                    <asp:Parameter Name="original_TimeOf" Type="String" />
+                    <asp:Parameter Name="original_SNF" Type="Decimal" />
+                    <asp:Parameter Name="original_FAT" Type="Decimal" />
+                    <asp:Parameter Name="original_Qty" Type="Int32" />
+                </DeleteParameters>
+                <InsertParameters>
+                    <asp:Parameter Name="CCode" Type="Int32" />
+                    <asp:Parameter Name="FarmerCode" Type="String" />
+                    <asp:Parameter Name="OldCode" Type="String" />
+                    <asp:Parameter Name="Parent" Type="String" />
+                    <asp:Parameter Name="DateOf" Type="String" />
+                    <asp:Parameter Name="TimeOf" Type="String" />
+                    <asp:Parameter Name="SNF" Type="Decimal" />
+                    <asp:Parameter Name="FAT" Type="Decimal" />
+                    <asp:Parameter Name="Qty" Type="Int32" />
+                </InsertParameters>
+                <SelectParameters>
+                    <asp:SessionParameter Name="UserId" SessionField="userId" Type="Int32" />
+                    <asp:SessionParameter DbType="Date" Name="SavedTime" SessionField="today" />
+                </SelectParameters>
+                <UpdateParameters>
+                    <asp:Parameter Name="CCode" Type="Int32" />
+                    <asp:Parameter Name="FarmerCode" Type="String" />
+                    <asp:Parameter Name="OldCode" Type="String" />
+                    <asp:Parameter Name="Parent" Type="String" />
+                    <asp:Parameter Name="DateOf" Type="String" />
+                    <asp:Parameter Name="TimeOf" Type="String" />
+                    <asp:Parameter Name="SNF" Type="Decimal" />
+                    <asp:Parameter Name="FAT" Type="Decimal" />
+                    <asp:Parameter Name="Qty" Type="Int32" />
+                    <asp:Parameter Name="original_ID" Type="Int32" />
+                    <asp:Parameter Name="original_CCode" Type="Int32" />
+                    <asp:Parameter Name="original_FarmerCode" Type="String" />
+                    <asp:Parameter Name="original_OldCode" Type="String" />
+                    <asp:Parameter Name="original_Parent" Type="String" />
+                    <asp:Parameter Name="original_DateOf" Type="String" />
+                    <asp:Parameter Name="original_TimeOf" Type="String" />
+                    <asp:Parameter Name="original_SNF" Type="Decimal" />
+                    <asp:Parameter Name="original_FAT" Type="Decimal" />
+                    <asp:Parameter Name="original_Qty" Type="Int32" />
+                </UpdateParameters>
+            </asp:SqlDataSource>
+
+            <%-- Bottom Buttons --%>
+            <div style="text-align: right;">
+                <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
+            </div>
         </div>
     </main>
 </asp:Content>
-
