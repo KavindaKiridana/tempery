@@ -1,0 +1,106 @@
+
+
+In my project, there is a **Form**. In this **Form**,
+there is a **supplier** and **cost** calculation part.
+In this form, if a user selects a **supplier with a**
+**USD** cost, then whether it's for any price,
+**MD** must **Sign** this paper for approval.
+If this form used a **supplier with LKR cost**
+then **MD** would only **sign** if the total cost is
+**larger than or equal to 15,000**.
+if **LKR LKR cost is equal or smaller than**
+**15,000** then **Mr. MD wouldn't sign.**
+
+- - -
+
+**User Scenarios**
+**Part 1:**
+1. Open the web site & log in
+2. Select an Invoice Company
+3. keep the **Supplier** dropdown, check the **Supplier**
+dropdown and kept the **default.**
+current type of the default **supplier - LKR**
+4. Put a description
+5. typed **Quantity** = 22 **Unit price** = **15,000**
+6. automatically Show the total of **330,000**
+it's bigger than **15,000.**
+7. looked at the authorizing template
+there was only one option in the
+template dropdown. & Mr. Shammindra Rajiyah
+was in it.
+8. **authorizing template** was correct for this time because
+if the **total cost** is **> 15,000**
+**Mr. Shammindra Rajiyah**
+**(MD) must sign this.**
+
+
+8. Now I change the first record's **Supplier** as
+"Supplier 2" (He is also a **LKR supplier**)
+9. Kept the other details such as **Description**,
+**Qty**, **Unit Price** as they kept before.
+10. Now looked at the **templates dropdown**.
+There was only one option shown at the
+**template dropdown**...
+11. and this only one option hasn't include
+**Mr. Shammindra (MD)**.
+**Error**: if the **LKR price** was **larger than**
+**15,000**, then **MD** must need to **sign**.
+
+- - -
+
+12. Again I went to the first record, I only changed
+the **unit price** to "15" (From 15,000 to 15)
+13. Remain the I didn't changed the remain inputs
+**total cost** was displayed as **LKR 330.00**
+14. Now, look at the **authorizing templates**.
+15. There was only one option in the **template**
+**dropdown**. **MD** wasn't there.
+**Correct msg**: **authorizing template** was correct
+bcz if the **LKR price** was **< 15,000** then
+**MD** wouldn't **Sign** to that.
+
+- - -
+
+16. Again I went to the first record, Changed the
+**Supplier** as **Supplier A** which was a **USD**
+**Supplier**.
+17. Remaining inputs was kept as before.
+Look at the **templates drop down**. It showed **2 options**.
+one option has **MD** & other option's **MD** wasn't.
+**Template option's** was correct bcz for **USD** prices,
+sometimes **MD** need to **Sign** & sometimes
+not. it can't decide in the **System**.
+
+Based on the image of the handwritten note, here is the text:
+
+---
+
+18 I refresh the web page.
+19 Keep the Invoice Company as
+default "**Remuka Ariyadasa**".
+20 Went into the **Cost Summary** table's
+First record.
+21 Select **Supplier** as **Supplier 3**
+(A **USD** Supplier)
+22 put a **Description**, **Quantity** = 22
+**Unit price** = 15,000
+23 **Total Cost** displayed as **USD**
+**330,000.00** automatically.
+24 Went to **Template dropdown** &
+it showed **2 options**.
+(one of them had **MD** & other has)
+**Authorizing templates** is correct.
+
+---
+
+25) Now I went to the **Cost Summary**
+table's first record again.
+26) Changed the **Supplier** as
+"Supplier 1" (A **LKR Supplier**)
+27) Other inputs kept same. Total **Cost**
+displayed as **330,000.00**.
+28) Went to the **templates dropdown**
+it showed only one option and **MD**
+didn't on it.
+**Error**: When the **LKR** price is larger than
+**15,000**, **MD** must **Sign** on the **form**.

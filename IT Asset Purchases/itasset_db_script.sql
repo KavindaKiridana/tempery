@@ -16,13 +16,15 @@ CREATE TABLE Reason (
 CREATE TABLE Company (
     CompanyId INT IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(255) NOT NULL,
-    Flag VARCHAR(255) NOT NULL
+    Flag VARCHAR(255) NOT NULL,
+	IsActive BIT NOT NULL DEFAULT(1)
 );
 
 -- Create Department table
 CREATE TABLE Department (
     DepartmentId INT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL
+    Name VARCHAR(255) NOT NULL,
+	IsActive BIT not null default(1)
 );
 
 -- Create Supplier table
