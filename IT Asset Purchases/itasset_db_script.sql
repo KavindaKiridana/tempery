@@ -31,7 +31,8 @@ CREATE TABLE Department (
 CREATE TABLE Supplier (
     SupplierId INT IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(255) NOT NULL,
-    Currency VARCHAR(50)
+    Currency VARCHAR(50),
+    IsActive bit not null default(1)
 );
 
 -- Create User table
@@ -82,6 +83,8 @@ CREATE TABLE Document (
     Quotation BIT,
     Configuration BIT,
     CostBeakdown BIT,
+    ConfirmedBy int NOT NULL,
+    FOREIGN KEY (ConfirmedBy) REFERENCES [User](UserId),
     FOREIGN KEY (ReasonId) REFERENCES Reason(ReasonId),
     FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
     FOREIGN KEY (DepartmentId) REFERENCES Department(DepartmentId),
