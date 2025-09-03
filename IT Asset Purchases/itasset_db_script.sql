@@ -36,8 +36,8 @@ CREATE TABLE Supplier (
 );
 
 -- Create User table
-CREATE TABLE [User] (
-    UserId INT IDENTITY(1,1) PRIMARY KEY,
+CREATE TABLE [Users] (
+    UsersId INT IDENTITY(1,1) PRIMARY KEY,
     Password VARCHAR(255) NOT NULL,
     IsActive BIT NOT NULL,
     UserName VARCHAR(255) NOT NULL,
@@ -116,5 +116,17 @@ CREATE TABLE SignedBy (
 );
 
 
+CREATE TABLE FlexibleTemplate (
+    FlexibleTemplateId int IDENTITY(1,1) PRIMARY KEY,
+    IsActive bit not null DEFAULT(1),
+)
+
+-- Related persons table
+CREATE TABLE PersonPosition (
+    PersonPositionsId int IDENTITY(1,1) PRIMARY KEY,
+    FlexibleTemplateId int FOREIGN KEY REFERENCES FlexibleTemplate(FlexibleTemplateId),
+    Position nvarchar(100),
+    PersonName nvarchar(100),
+)
 
 PRINT 'ITAssetRequest database and tables created successfully!';
