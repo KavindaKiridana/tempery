@@ -1,13 +1,18 @@
 
 CREATE TABLE FlexibleTemplate (
     FlexibleTemplateId int IDENTITY(1,1) PRIMARY KEY,
+    CompanyId INT NOT NULL,
     IsActive bit not null DEFAULT(1),
-)
+    FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId)
+);
 
 -- Related persons table
 CREATE TABLE PersonPosition (
-    PersonPositionsId int IDENTITY(1,1) PRIMARY KEY,
-    FlexibleTemplateId int FOREIGN KEY REFERENCES FlexibleTemplate(FlexibleTemplateId),
-    Position nvarchar(100),
-    PersonName nvarchar(100),
-)
+    PersonPositionId INT IDENTITY(1,1) PRIMARY KEY,
+    FlexibleTemplateId int not null,
+    PersonId int not null,
+    Position VARCHAR(50) not null,
+FOREIGN KEY (FlexibleTemplateId) REFERENCES FlexibleTemplate(FlexibleTemplateId),
+FOREIGN KEY (PersonId) REFERENCES Users(UsersId),
+CONSTRAINT UQ_PersonPosition UNIQUE (FlexibleTemplateId, PersonId) -- Composite unique constraint
+);
