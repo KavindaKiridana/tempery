@@ -67,6 +67,7 @@ CREATE TABLE Document (
     DepartmentId INT NOT NULL,
     UserId INT NOT NULL, -- edited user
     DepartmentHead INT NOT NULL, -- department Head user
+    TemplateId int NOT NULL,
     SavedTime DATETIME DEFAULT GETDATE(),
     SerialNo VARCHAR(255),
     Status VARCHAR(50) CHECK (Status IN ('pending', 'approved', 'rejected')),
@@ -89,6 +90,7 @@ CREATE TABLE Document (
     FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
     FOREIGN KEY (DepartmentId) REFERENCES Department(DepartmentId),
     FOREIGN KEY (UserId) REFERENCES [User](UserId),
+    FOREIGN key(TemplateId) REFERENCES [Template](TemplateId),
     FOREIGN KEY (DepartmentHead) REFERENCES [User](UserId)
 );
 
