@@ -16,3 +16,7 @@ FOREIGN KEY (FlexibleTemplateId) REFERENCES FlexibleTemplate(FlexibleTemplateId)
 FOREIGN KEY (PersonId) REFERENCES Users(UsersId),
 CONSTRAINT UQ_PersonPosition UNIQUE (FlexibleTemplateId, PersonId) -- Composite unique constraint
 );
+
+
+ALTER TABLE RequestedItemPayments
+ADD Currency VARCHAR(50);

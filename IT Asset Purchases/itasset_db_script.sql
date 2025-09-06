@@ -90,7 +90,7 @@ CREATE TABLE Document (
     FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
     FOREIGN KEY (DepartmentId) REFERENCES Department(DepartmentId),
     FOREIGN KEY (UserId) REFERENCES [User](UserId),
-    FOREIGN key(TemplateId) REFERENCES [Template](TemplateId),
+    FOREIGN key(TemplateId) REFERENCES [FlexibleTemplate](FlexibleTemplateId),
     FOREIGN KEY (DepartmentHead) REFERENCES [User](UserId)
 );
 
