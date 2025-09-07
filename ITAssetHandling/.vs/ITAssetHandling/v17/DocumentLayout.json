@@ -1,0 +1,56 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\user\\Desktop\\ITAssetHandling\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EE858E8F-5D4A-41CD-92F9-E08964FB426D}|ITAssetHandling\\ITAssetHandling.csproj|c:\\users\\user\\desktop\\itassethandling\\itassethandling\\about.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EE858E8F-5D4A-41CD-92F9-E08964FB426D}|ITAssetHandling\\ITAssetHandling.csproj|solutionrelative:itassethandling\\about.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EE858E8F-5D4A-41CD-92F9-E08964FB426D}|ITAssetHandling\\ITAssetHandling.csproj|C:\\Users\\user\\Desktop\\ITAssetHandling\\itassethandling\\about.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{EE858E8F-5D4A-41CD-92F9-E08964FB426D}|ITAssetHandling\\ITAssetHandling.csproj|solutionrelative:itassethandling\\about.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "About.aspx.cs",
+              "DocumentMoniker": "C:\\Users\\user\\Desktop\\ITAssetHandling\\ITAssetHandling\\About.aspx.cs",
+              "RelativeDocumentMoniker": "ITAssetHandling\\About.aspx.cs",
+              "ToolTip": "C:\\Users\\user\\Desktop\\ITAssetHandling\\ITAssetHandling\\About.aspx.cs",
+              "RelativeToolTip": "ITAssetHandling\\About.aspx.cs",
+              "ViewState": "AgIAAOoAAAAAAAAAAAAAAPUAAABOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T15:16:07.027Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "About.aspx",
+              "DocumentMoniker": "C:\\Users\\user\\Desktop\\ITAssetHandling\\ITAssetHandling\\About.aspx",
+              "RelativeDocumentMoniker": "ITAssetHandling\\About.aspx",
+              "ToolTip": "C:\\Users\\user\\Desktop\\ITAssetHandling\\ITAssetHandling\\About.aspx",
+              "RelativeToolTip": "ITAssetHandling\\About.aspx",
+              "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
+              "WhenOpened": "2025-09-06T15:15:58.38Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

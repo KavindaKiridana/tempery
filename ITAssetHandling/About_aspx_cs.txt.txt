@@ -1,0 +1,912 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using WebApplication1;
+
+namespace ITAssetHandling
+{
+    public partial class About : Page
+    {
+        //sqlconnection
+        SqlConnection sqlconn = new SqlConnection(ConfigurationManager.ConnectionStrings["ITAssetConn"].ConnectionString);
+        string currency = "";
+        decimal total = 0;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["UserId"] == null || string.IsNullOrEmpty(Session["UserId"].ToString()))
+            {
+                //Redirect to login page if session is null
+                Response.Redirect("~/Default.aspx");
+            }
+            if (!IsPostBack)
+            {
+                txtDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                txtRequestedBy.Text = Session["FullName"].ToString();
+                LoadCompanies();
+                LoadDepartment();
+                LoadReasons();
+                LoadDivHeads();
+                LoadSuppliers();
+                InitialCurrency();
+            }
+        }
+
+        //function for load companies list
+        private void LoadCompanies()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT CompanyId, CName FROM Company ORDER BY CName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear existing items
+                ddlCompany.Items.Clear();
+
+                // Add default item
+                //ddlCompany.Items.Add(new ListItem("-- Select Company --", "0"));
+
+                while (reader.Read())
+                {
+                    ddlCompany.Items.Add(new ListItem(reader["CName"].ToString(), reader["CompanyId"].ToString()));
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading companies: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        //function for load first supplier list
+        private void LoadSuppliers()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT SupplierId, SName FROM Supplier ORDER BY SName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear existing items
+                ddlSupply1.Items.Clear();
+
+                while (reader.Read())
+                {
+                    ddlSupply1.Items.Add(new ListItem(reader["SName"].ToString(), reader["SupplierId"].ToString()));
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading supplier: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        //function for load another supplier lists
+        private void LoadNextSuppliers()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT SupplierId, SName FROM Supplier  where Currency='" + currency + "' ORDER BY SName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear existing items
+                ddlSupply2.Items.Clear();
+                ddlSupply3.Items.Clear();
+                ddlSupply4.Items.Clear();
+                ddlSupply5.Items.Clear();
+                ddlSupply6.Items.Clear();
+
+                while (reader.Read())
+                {
+                    ddlSupply2.Items.Add(new ListItem(reader["SName"].ToString(), reader["SupplierId"].ToString()));
+                    ddlSupply3.Items.Add(new ListItem(reader["SName"].ToString(), reader["SupplierId"].ToString()));
+                    ddlSupply4.Items.Add(new ListItem(reader["SName"].ToString(), reader["SupplierId"].ToString()));
+                    ddlSupply5.Items.Add(new ListItem(reader["SName"].ToString(), reader["SupplierId"].ToString()));
+                    ddlSupply6.Items.Add(new ListItem(reader["SName"].ToString(), reader["SupplierId"].ToString()));
+
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading suppliers: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        private void InitialCurrency()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT Currency FROM Supplier ORDER BY SName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    currency = reader["Currency"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading currency: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+            lblCurrency.Text = currency;
+            LoadNextSuppliers();
+        }
+
+        //function for load departments list
+        private void LoadDepartment()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT DepartmentId, DName FROM Department ORDER BY DName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear existing items
+                ddlDepartment.Items.Clear();
+                ddlUsedByToWhom.Items.Clear();
+
+                // Add default item
+                //ddlDepartment.Items.Add(new ListItem("-- Select Department --", "0"));
+                //ddlUsedByToWhom.Items.Add(new ListItem("-- Select Department --", "0"));
+
+                while (reader.Read())
+                {
+                    ddlDepartment.Items.Add(new ListItem(reader["DName"].ToString(), reader["DepartmentId"].ToString()));
+                    ddlUsedByToWhom.Items.Add(new ListItem(reader["DName"].ToString(), reader["DepartmentId"].ToString()));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading departments: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        //function for load reasons list
+        private void LoadReasons()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT ReasonId, RName FROM Reason ORDER BY RName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear existing items
+                ddlReason.Items.Clear();
+
+                // Add default item
+                //ddlReason.Items.Add(new ListItem("-- Select Reason --", "0"));
+
+                while (reader.Read())
+                {
+                    ddlReason.Items.Add(new ListItem(reader["RName"].ToString(), reader["ReasonId"].ToString()));
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading reasons: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        //function for load divisional heads list
+        private void LoadDivHeads()
+        {
+            checkconnection();
+            try
+            {
+                sqlconn.Open();
+                string query = "SELECT UsersId, FullName FROM Users where IsHeadOrNot='1' ORDER BY FullName";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear existing items
+                ddlHead.Items.Clear();
+
+                // Add default item
+                //ddlHead.Items.Add(new ListItem("-- Select Head --", "0"));
+
+                while (reader.Read())
+                {
+                    ddlHead.Items.Add(new ListItem(reader["FullName"].ToString(), reader["UsersId"].ToString()));
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                Response.Write("Error loading heads: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        protected void btnReset_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.RawUrl);
+
+            //Remove the code after Response.Redirect - it never executes
+            //txtDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
+            //txtRequestedBy.Text = Session["FullName"].ToString();
+            //LoadCompanies();
+            //LoadDepartment();
+            //LoadReasons();
+            //LoadDivHeads();
+            //LoadSuppliers();
+        }
+
+        protected void record1_TextChanged(object sender, EventArgs e)
+        {
+            calculateTotal("txtQty1", "txtPrice1", "lblTotal1");
+        }
+        protected void record2_TextChanged(object sender, EventArgs e)
+        {
+            calculateTotal("txtQty2", "txtPrice2", "lblTotal2");
+        }
+        protected void record3_TextChanged(object sender, EventArgs e)
+        {
+            calculateTotal("txtQty3", "txtPrice3", "lblTotal3");
+        }
+        protected void record4_TextChanged(object sender, EventArgs e)
+        {
+            calculateTotal("txtQty4", "txtPrice4", "lblTotal4");
+        }
+        protected void record5_TextChanged(object sender, EventArgs e)
+        {
+            calculateTotal("txtQty5", "txtPrice5", "lblTotal5");
+        }
+        protected void record6_TextChanged(object sender, EventArgs e)
+        {
+            calculateTotal("txtQty6", "txtPrice6", "lblTotal6");
+        }
+
+        protected void ddlCompany_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadTemplates(total);
+        }
+
+        public void calculateTotal(string txtQtyId, string txtPriceId, string lblTotal)
+        {
+            // Get the ContentPlaceHolder
+            ContentPlaceHolder mainContent = (ContentPlaceHolder)Master.FindControl("MainContent");
+
+            if (mainContent == null) return;
+
+            // Find the controls inside the placeholder
+            TextBox qtyTextBox = (TextBox)mainContent.FindControl(txtQtyId);
+            TextBox priceTextBox = (TextBox)mainContent.FindControl(txtPriceId);
+            Label totalLabel = (Label)mainContent.FindControl(lblTotal);
+
+            if (qtyTextBox == null || priceTextBox == null || totalLabel == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(qtyTextBox.Text) || string.IsNullOrEmpty(priceTextBox.Text))
+            {
+                totalLabel.Text = "";
+                return;
+            }
+
+            decimal qty;
+            decimal price;
+
+            if (!decimal.TryParse(qtyTextBox.Text, out qty))
+            {
+                totalLabel.Text = "Quantity must be a number";
+                return;
+            }
+
+            if (!decimal.TryParse(priceTextBox.Text, out price))
+            {
+                totalLabel.Text = "Price must be a number";
+                return;
+            }
+
+            totalLabel.Text = (qty * price).ToString("N2"); // formats to 2 decimal places
+            finalCost();
+        }
+
+        public void finalCost()
+        {
+            decimal total = 0;
+            decimal tempValue = 0;
+
+            // Check lblTotal1
+            if (!string.IsNullOrEmpty(lblTotal1.Text) &&
+                decimal.TryParse(lblTotal1.Text.Replace(",", ""), out tempValue))
+            {
+                total += tempValue;
+            }
+
+            // Check lblTotal2
+            if (!string.IsNullOrEmpty(lblTotal2.Text) &&
+                decimal.TryParse(lblTotal2.Text.Replace(",", ""), out tempValue))
+            {
+                total += tempValue;
+            }
+
+            // Check lblTotal3
+            if (!string.IsNullOrEmpty(lblTotal3.Text) &&
+                decimal.TryParse(lblTotal3.Text.Replace(",", ""), out tempValue))
+            {
+                total += tempValue;
+            }
+
+            // Check lblTotal4
+            if (!string.IsNullOrEmpty(lblTotal4.Text) &&
+                decimal.TryParse(lblTotal4.Text.Replace(",", ""), out tempValue))
+            {
+                total += tempValue;
+            }
+
+            // Check lblTotal5
+            if (!string.IsNullOrEmpty(lblTotal5.Text) &&
+                decimal.TryParse(lblTotal5.Text.Replace(",", ""), out tempValue))
+            {
+                total += tempValue;
+            }
+
+            // Check lblTotal6
+            if (!string.IsNullOrEmpty(lblTotal6.Text) &&
+                decimal.TryParse(lblTotal6.Text.Replace(",", ""), out tempValue))
+            {
+                total += tempValue;
+            }
+            // Update the total cost label
+            lblTotalCost.Text = total.ToString("N2");
+            LoadTemplates(total);
+        }
+
+        //function for templates list
+        private void LoadTemplates(decimal totalCost)
+        {
+            string currencyForTemplate = lblCurrency.Text.ToString();
+
+            // Check if company is selected
+            if (ddlCompany.SelectedValue == null || string.IsNullOrEmpty(ddlCompany.SelectedValue) || ddlCompany.SelectedValue == "0")
+            {
+                ddlTemplate.Items.Clear();
+                ddlTemplate.Items.Insert(0, new ListItem("-- Select Company First --", "0"));
+                return;
+            }
+
+            int selectedCompany = Convert.ToInt32(ddlCompany.SelectedValue);
+            checkconnection();
+
+            try
+            {
+                sqlconn.Open();
+
+                if (currencyForTemplate == "USD")
+                {
+                    // For USD, load all active templates for the company
+                    // string query = "SELECT TemplateId, IsMDSign, ITManagerId, CEOId, MDId FROM Template WHERE IsActive=1 AND CompanyId=@CompanyId ORDER BY TemplateId";
+                    string query = @"
+SELECT
+    t.TemplateId,
+    t.IsMDSign,
+    t.ITManagerId,
+    IT.FullName AS ITManagerName,
+    t.CEOId,
+    CEO.FullName AS CEOName,
+    t.MDId,
+    MD.FullName AS MDName
+FROM Template t
+INNER JOIN Users IT ON t.ITManagerId = IT.UsersId
+INNER JOIN Users CEO ON t.CEOId = CEO.UsersId
+LEFT JOIN Users MD ON t.MDId = MD.UsersId
+WHERE t.IsActive = 1 AND t.CompanyId = @CompanyId
+ORDER BY t.TemplateId;";
+                    SqlCommand cmd = new SqlCommand(query, sqlconn);
+                    cmd.Parameters.AddWithValue("@CompanyId", selectedCompany);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    // Clear existing items and add default option
+                    ddlTemplate.Items.Clear();
+                    // ddlTemplate.Items.Insert(0, new ListItem("-- Select Template --", "0"));
+
+                    while (reader.Read())
+                    {
+                        string templateId = reader["TemplateId"].ToString();
+                        string displayText = reader["CEOName"].ToString() + "," + reader["ITManagerName"].ToString() + "," + reader["MDName"].ToString();
+                        ddlTemplate.Items.Add(new ListItem(displayText, templateId));
+                    }
+                    reader.Close();
+                }
+                else if (currencyForTemplate == "LKR")
+                {
+                    // Use the totalCost parameter passed to the function instead of parsing from label
+                    if (totalCost > 15000.0m)
+                    {
+                        // Cost is larger than 15000, so MD would sign here
+                        //string query = "SELECT TemplateId, IsMDSign, ITManagerId, CEOId, MDId FROM Template WHERE IsActive=1 AND CompanyId=@CompanyId AND IsMDSign=1 ORDER BY TemplateId";
+                        string query = @"
+SELECT 
+    t.TemplateId,
+    t.IsMDSign,
+    t.ITManagerId,
+    IT.FullName AS ITManagerName,
+    t.CEOId,
+    CEO.FullName AS CEOName,
+    t.MDId,
+    MD.FullName AS MDName
+FROM Template t
+INNER JOIN Users IT ON t.ITManagerId = IT.UsersId
+INNER JOIN Users CEO ON t.CEOId = CEO.UsersId
+LEFT JOIN Users MD ON t.MDId = MD.UsersId
+WHERE t.IsActive = 1 
+  AND t.IsMDSign = 1 
+  AND t.CompanyId = @CompanyId
+ORDER BY t.TemplateId";
+                        SqlCommand cmd = new SqlCommand(query, sqlconn);
+                        cmd.Parameters.AddWithValue("@CompanyId", selectedCompany);
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        // Clear existing items and add default option
+                        ddlTemplate.Items.Clear();
+                        //  ddlTemplate.Items.Insert(0, new ListItem("-- Select Template (MD Sign Required) --", "0"));
+
+                        while (reader.Read())
+                        {
+                            string templateId = reader["TemplateId"].ToString();
+                            string displayText = reader["CEOName"].ToString() + "," + reader["ITManagerName"].ToString() + "," + reader["MDName"].ToString();
+                            ddlTemplate.Items.Add(new ListItem(displayText, templateId));
+                        }
+                        reader.Close();
+                    }
+                    else // totalCost <= 15000.0m ,MD wouldn't sign
+                    {
+                        // Cost is small or equal to 15000, so other authority
+                        //string query = "SELECT TemplateId, IsMDSign, ITManagerId, CEOId, MDId FROM Template WHERE IsActive=1 AND CompanyId=@CompanyId AND IsMDSign=0 ORDER BY TemplateId";
+                        string query = @"
+SELECT 
+    t.TemplateId,
+    t.IsMDSign,
+    t.ITManagerId,
+    IT.FullName AS ITManagerName,
+    t.CEOId,
+    CEO.FullName AS CEOName,
+    t.MDId,
+    MD.FullName AS MDName
+FROM Template t
+INNER JOIN Users IT ON t.ITManagerId = IT.UsersId
+INNER JOIN Users CEO ON t.CEOId = CEO.UsersId
+LEFT JOIN Users MD ON t.MDId = MD.UsersId
+WHERE t.IsActive = 1 
+  AND t.IsMDSign = 0 
+  AND t.CompanyId = @CompanyId
+ORDER BY t.TemplateId";
+                        SqlCommand cmd = new SqlCommand(query, sqlconn);
+                        cmd.Parameters.AddWithValue("@CompanyId", selectedCompany);
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        // Clear existing items and add default option
+                        ddlTemplate.Items.Clear();
+                        // ddlTemplate.Items.Insert(0, new ListItem("-- Select Template (MD wouldn't sign) --", "0"));
+
+                        while (reader.Read())
+                        {
+                            string templateId = reader["TemplateId"].ToString();
+                            //string displayText = $"Template {templateId} (MD wouldn't sign)";
+                            string displayText = reader["CEOName"].ToString() + "," + reader["ITManagerName"].ToString() + "," + reader["MDName"].ToString();
+                            ddlTemplate.Items.Add(new ListItem(displayText, templateId));
+                        }
+                        reader.Close();
+                    }
+                }
+                else
+                {
+                    // Handle unknown currency
+                    ddlTemplate.Items.Clear();
+                    ddlTemplate.Items.Insert(0, new ListItem("-- Unknown Currency Type --", "0"));
+                    Response.Write("Warning: Unknown currency type: " + currencyForTemplate);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                ddlTemplate.Items.Clear();
+                ddlTemplate.Items.Insert(0, new ListItem("-- Error Loading Templates --", "0"));
+                Response.Write("Error loading templates: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+        }
+
+        protected void ddlSupply1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string supplierId = ddlSupply1.SelectedValue;
+
+            if (supplierId == "false" || string.IsNullOrEmpty(supplierId))
+            {
+                lblCurrency.Text = "";
+                return;
+            }
+
+            try
+            {
+                checkconnection();
+                sqlconn.Open();
+
+                string query = "SELECT Currency FROM Supplier WHERE SupplierId = @SupplierId";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                cmd.Parameters.AddWithValue("@SupplierId", supplierId);
+
+                object result = cmd.ExecuteScalar();
+
+                if (result != null)
+                {
+                    currency = result.ToString();
+                    lblCurrency.Text = currency;
+                    LoadNextSuppliers();
+                }
+            }
+            catch (Exception ex)
+            {
+                lblCurrency.Text = "Error: " + ex.Message;
+            }
+            finally
+            {
+                sqlconn.Close();
+            }
+            LoadTemplates(total);
+        }
+
+
+        public void checkconnection()
+        {
+            if (sqlconn.State == ConnectionState.Open)
+            {
+                sqlconn.Close();
+            }
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            //get form's data
+            DateTime date = Convert.ToDateTime(txtDate.Text);
+            int requestedBy = Convert.ToInt32(Session["UserId"]);
+            int invoiceCompany = Convert.ToInt32(ddlCompany.SelectedValue); // Foreign key, int in DB
+            int allocationDepartment = Convert.ToInt32(ddlDepartment.SelectedValue); // Foreign key, int in DB
+            int reason = Convert.ToInt32(ddlReason.SelectedValue); // Foreign key, int in DB
+            int divisionHead = Convert.ToInt32(ddlHead.SelectedValue); // Foreign key, int in DB
+            int usedByToWhom = Convert.ToInt32(ddlUsedByToWhom.SelectedValue); // Foreign key, int in DB
+            bool budgeted = Convert.ToBoolean(ddlBudgeted.SelectedValue); // Bool in DB
+            int templateID = Convert.ToInt32(ddlTemplate.SelectedValue);// Foreign key, int in DB
+            string confirmedBy= txtConfirmedBy.Text;
+
+            // Handle nullable DateTime
+            DateTime? dateOfPurchase = null;
+            if (!string.IsNullOrWhiteSpace(txtDateOfPurchase.Text))
+            {
+                dateOfPurchase = Convert.ToDateTime(txtDateOfPurchase.Text);
+            }
+
+            string warranty = txtWarranty.Text; // Can be null
+            string make = txtMake.Text; // Can be null
+            string serialNo = txtSerialNo.Text; // Can be null
+            string model = txtModel.Text; // Can be null
+
+            // Handle nullable BIT (bool) fields from dropdowns
+            bool? quotation = null;
+            if (ddlQuatation.SelectedValue != "null")
+            {
+                quotation = Convert.ToBoolean(ddlQuatation.SelectedValue);
+            }
+
+            bool? configuration = null;
+            if (ddlConfigurationEvalation.SelectedValue != "null")
+            {
+                configuration = Convert.ToBoolean(ddlConfigurationEvalation.SelectedValue);
+            }
+
+            bool? costBreakdown = null;
+            if (ddlCostBreakdown.SelectedValue != "null")
+            {
+                costBreakdown = Convert.ToBoolean(ddlCostBreakdown.SelectedValue);
+            }
+
+            string divisionComments = txtITComments.Text; // Required
+            string recommendation = txtITDivRecommend.Text; // Can be null
+            string remark = txtRemark.Text; // Can be null
+
+            // Get TotalCost from the label (assuming it's calculated correctly)
+            decimal totalCost = 0;
+            if (!string.IsNullOrWhiteSpace(lblTotalCost.Text))
+            {
+                // Remove commas if present (from N2 formatting) before parsing
+                if (!decimal.TryParse(lblTotalCost.Text.Replace(",", ""), out totalCost))
+                {
+                    // Handle potential parsing error if lblTotalCost.Text is not a valid number
+                    Response.Write("Error: Total Cost is not a valid number.");
+                    return; // Or handle the error appropriately
+                }
+            }
+
+
+            // --- Save data to Document table ---
+            int newDocumentId = -1; // Variable to hold the ID of the newly inserted document
+
+            try
+            {
+                checkconnection();
+                sqlconn.Open();
+
+                // Use parameterized query to prevent SQL injection
+                string insertDocumentQuery = @"
+            INSERT INTO Document (
+                ReasonId, CompanyId, DepartmentId, UsedByToWhom, UsersId, DepartmentHead,
+                SerialNo, ITDivisionComment, ITDivisionRecommendation, Remarks, TotalCost,
+                Budgeted, EIDDateOfPurchase, EIDMake, EIDSerialNo, EIDWarranty, EIDModel,
+                Quotation, Configuration, CostBeakdown ,TemplateId,ConfirmedBy
+            ) VALUES (
+                @ReasonId, @CompanyId, @DepartmentId, @UsedByToWhom, @UsersId, @DepartmentHead,
+                @SerialNo, @ITDivisionComment, @ITDivisionRecommendation, @Remarks, @TotalCost,
+                @Budgeted, @EIDDateOfPurchase, @EIDMake, @EIDSerialNo, @EIDWarranty, @EIDModel,
+                @Quotation, @Configuration, @CostBeakdown, @TemplateId,@ConfirmedBy
+            );
+            SELECT SCOPE_IDENTITY();"; // Get the ID of the newly inserted row
+
+                using (SqlCommand cmd = new SqlCommand(insertDocumentQuery, sqlconn))
+                {
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@ReasonId", reason);
+                    cmd.Parameters.AddWithValue("@CompanyId", invoiceCompany);
+                    cmd.Parameters.AddWithValue("@DepartmentId", allocationDepartment);
+                    cmd.Parameters.AddWithValue("@UsedByToWhom", usedByToWhom);
+                    cmd.Parameters.AddWithValue("@UsersId", requestedBy); // Assuming 'UsersId' is the edited user
+                    cmd.Parameters.AddWithValue("@DepartmentHead", divisionHead);
+                    cmd.Parameters.AddWithValue("@templateID", templateID); 
+                        cmd.Parameters.AddWithValue("@ConfirmedBy", confirmedBy);
+                    // SavedTime uses DEFAULT GETDATE(), so no need to insert explicitly
+
+                    // Handle potentially null string fields
+                    cmd.Parameters.AddWithValue("@SerialNo", (object)serialNo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@ITDivisionComment", divisionComments ?? (object)DBNull.Value); // Should not be null per requirement, but handle just in case
+                    cmd.Parameters.AddWithValue("@ITDivisionRecommendation", (object)recommendation ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Remarks", (object)remark ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@TotalCost", totalCost); // Use the parsed totalCost
+
+                    cmd.Parameters.AddWithValue("@Budgeted", budgeted);
+
+                    // Handle potentially null DateTime
+                    cmd.Parameters.AddWithValue("@EIDDateOfPurchase", (object)dateOfPurchase ?? DBNull.Value);
+
+                    // Handle potentially null string fields for EID
+                    cmd.Parameters.AddWithValue("@EIDMake", (object)make ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@EIDSerialNo", (object)serialNo ?? DBNull.Value); // Note: serialNo variable used
+                    cmd.Parameters.AddWithValue("@EIDWarranty", (object)warranty ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@EIDModel", (object)model ?? DBNull.Value);
+
+                    // Handle potentially null BIT fields
+                    cmd.Parameters.AddWithValue("@Quotation", (object)quotation ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Configuration", (object)configuration ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CostBeakdown", (object)costBreakdown ?? DBNull.Value);
+
+                    // Execute the query and get the new DocumentId
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        newDocumentId = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details (ex) appropriately
+                Response.Write("<script>alert('An error occurred while submitting the form: " + ex.Message + "');</script>");
+                // Consider logging the full exception (ex.ToString()) server-side
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+            if (newDocumentId > 0)
+            {
+                // --- Save data to RequestedItemPayments table ---
+                updateRequestedItemPaymentsTable(newDocumentId);
+
+                GeneratePDF generatePDF = new GeneratePDF();
+                generatePDF.GetPDF(newDocumentId);
+
+                // FIXED: Show alert BEFORE redirect, and use proper redirect approach
+                string script = @"
+            <script type='text/javascript'>
+                alert('Form submitted successfully! Document ID: " + newDocumentId + @"');
+                window.location.href = '" + Request.RawUrl + @"';
+            </script>";
+
+                ClientScript.RegisterStartupScript(this.GetType(), "SuccessAlert", script);
+            }
+            else
+            {
+                Response.Write("<script>alert('Error: Failed to create document record.');</script>");
+            }
+        }
+
+        protected void updateRequestedItemPaymentsTable(int DocumentID)
+        {
+            // Array of your total labels for easy iteration
+            Label[] totalLabels = { lblTotal1, lblTotal2, lblTotal3, lblTotal4, lblTotal5, lblTotal6 };
+
+            // Count how many labels have content
+            int filledRecords = totalLabels.Count(label => !string.IsNullOrEmpty(label.Text));
+
+            switch (filledRecords)
+            {
+                case 0:
+                    // No records entered
+                    // Handle this case if needed, maybe show an error?
+                    // For now, we'll treat it like case 1 or just let it fall through logically
+                    // might want to validate this elsewhere before calling this function.
+                    break;
+                case 1:
+                    // User entered only the first record
+                    SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
+                    break;
+                case 2:
+                    // User entered the first two records.
+                    SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
+                    SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
+                    break;
+                case 3:
+                    // User entered the first three records
+                    SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
+                    SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
+                    SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
+                    break;
+                case 4:
+                    // ... your logic for 4 records ...
+                    SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
+                    SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
+                    SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
+                    SaveRecordData(4, DocumentID, ddlSupply4.SelectedValue, txtDetail4.Text, txtQty4.Text, txtPrice4.Text, lblTotal4.Text);
+                    break;
+                case 5:
+                    // ... your logic for 5 records ...
+                    SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
+                    SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
+                    SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
+                    SaveRecordData(4, DocumentID, ddlSupply4.SelectedValue, txtDetail4.Text, txtQty4.Text, txtPrice4.Text, lblTotal4.Text);
+                    SaveRecordData(5, DocumentID, ddlSupply5.SelectedValue, txtDetail5.Text, txtQty5.Text, txtPrice5.Text, lblTotal5.Text);
+                    break;
+                case 6:
+                    // User entered all records
+                    SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
+                    SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
+                    SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
+                    SaveRecordData(4, DocumentID, ddlSupply4.SelectedValue, txtDetail4.Text, txtQty4.Text, txtPrice4.Text, lblTotal4.Text);
+                    SaveRecordData(5, DocumentID, ddlSupply5.SelectedValue, txtDetail5.Text, txtQty5.Text, txtPrice5.Text, lblTotal5.Text);
+                    SaveRecordData(6, DocumentID, ddlSupply6.SelectedValue, txtDetail6.Text, txtQty6.Text, txtPrice6.Text, lblTotal6.Text);
+                    break;
+                default:
+                    // This case shouldn't happen with the logic above
+                    // Handle unexpected state if necessary
+                    break;
+            }
+        }
+
+        // Helper method to encapsulate saving logic for a single row
+        private void SaveRecordData(int recordNumber, int DocumentID, string supplierId, string description, string quantity, string unitPrice, string total)
+        {
+            // Implement  database saving logic here for a single record row
+            // Use the parameters passed in.
+            try
+            {
+                checkconnection();
+                sqlconn.Open();
+                string query = @"INSERT INTO RequestedItemPayments 
+(UnitPrice, Qty, Description, DocumentID, SupplierId) VALUES 
+(@UnitPrice,@Quantity,@Description,@documentid,@SupplierId)";
+                SqlCommand cmd = new SqlCommand(query, sqlconn);
+                cmd.Parameters.AddWithValue("@documentid", DocumentID);
+                cmd.Parameters.AddWithValue("@SupplierId", supplierId);
+                cmd.Parameters.AddWithValue("@Description", description);
+                cmd.Parameters.AddWithValue("@Quantity", quantity);
+                cmd.Parameters.AddWithValue("@UnitPrice", unitPrice);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                // Handle error appropriately (log it, show message)
+                Response.Write($"Error saving record {recordNumber}: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlconn.State == ConnectionState.Open)
+                {
+                    sqlconn.Close();
+                }
+            }
+
+        }
+    }
+}

@@ -1,0 +1,49 @@
+To **add a new allowed value** (`'Editor'`) to the `IsAuthorizer` column's `CHECK` constraint **without deleting existing data**, you’ll first need to:
+
+1. **Find the name of the existing `CHECK` constraint**.
+2. **Drop the existing constraint**.
+3. **Recreate it** with the updated list (`'Unauthorizer', 'IT Manager', 'CEO', 'MD', 'Editor'`).
+
+---
+
+### ✅ Step-by-step SQL Queries (for Microsoft SQL Server):
+
+#### 1️⃣ Find the current CHECK constraint name:
+
+```sql
+SELECT name
+FROM sys.check_constraints
+WHERE parent_object_id = OBJECT_ID('Users') AND definition LIKE '%IsAuthorizer%';
+```
+
+> Note the constraint name from the result (e.g., `CK__Users__IsAuthorizer__12345678`)
+
+---
+
+#### 2️⃣ Drop the existing CHECK constraint:
+
+```sql
+ALTER TABLE Users
+DROP CONSTRAINT CK__Users__IsAuthorizer__12345678; -- Replace with actual name
+```
+
+---
+
+#### 3️⃣ Add the new CHECK constraint with `'Editor'`:
+
+```sql
+ALTER TABLE Users
+ADD CONSTRAINT CK_Users_IsAuthorizer
+CHECK (IsAuthorizer IN ('Unauthorizer', 'IT Manager', 'CEO', 'MD', 'Editor'));
+```
+
+---
+
+### ⚠️ Important:
+
+* Make sure no rows in your table currently violate this new constraint.
+* The `DROP` and `ADD` constraint approach **does not affect existing data** if current values are valid.
+
+---
+
+Let me know if you'd like a script that **auto-detects and replaces** the constraint without manually inserting the name.
