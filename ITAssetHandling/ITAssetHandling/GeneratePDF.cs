@@ -477,21 +477,26 @@ ORDER BY pp.PersonPositionId";
 
         private void CreateCostSummaryTable(Document document, DocumentModel doc, Font headerFont, Font normalFont)
         {
-            // Create main table with 7 columns
-            var mainTable = new PdfPTable(7) { WidthPercentage = 100 };
-            mainTable.SetWidths(new float[] { 24f, 10f, 25f, 23f, 5f, 12f, 15f });
+            // Determine number of columns and widths dynamically
+            int columnCount = doc.IsSameCurrency ? 7 : 8;
+            float[] columnWidths = doc.IsSameCurrency
+                ? new float[] { 24f, 10f, 25f, 23f, 5f, 12f, 15f }
+                : new float[] { 20f, 8f, 25f, 23f, 10f, 5f, 11f, 14f };
+
+            var mainTable = new PdfPTable(columnCount) { WidthPercentage = 100 };
+            mainTable.SetWidths(columnWidths);
 
             // First row - Main headers
             var smallerFont = FontFactory.GetFont(FontFactory.HELVETICA, 8);
             var configHeaderCell = new PdfPCell(new Phrase("Costing & Configuration (If repair only quotation will be attached)", smallerFont));
-            configHeaderCell.Colspan = 2; // Columns 1-2
+            configHeaderCell.Colspan = 2;
             configHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             configHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             configHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(configHeaderCell);
 
-            var costHeaderCell = new PdfPCell(new Phrase("Cost Summary & Recommended Supplier", headerFont));
-            costHeaderCell.Colspan = 5; // Columns 3-7 (changed from 6 to 5)
+            var costHeaderCell = new PdfPCell(new Phrase("Cost Summary & Recommended Supplier", smallerFont));
+            costHeaderCell.Colspan = doc.IsSameCurrency ? 5 : 6; // Adjust colspan based on currency mode
             costHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             costHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             costHeaderCell.Border = Rectangle.BOX;
@@ -510,33 +515,42 @@ ORDER BY pp.PersonPositionId";
             attachedHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(attachedHeaderCell);
 
-            var supplierHeaderCell = new PdfPCell(new Phrase("Supplier", headerFont));
+            var supplierHeaderCell = new PdfPCell(new Phrase("Supplier", smallerFont));
             supplierHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             supplierHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             supplierHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(supplierHeaderCell);
 
-            var descriptionHeaderCell2 = new PdfPCell(new Phrase("Description", headerFont));
+            var descriptionHeaderCell2 = new PdfPCell(new Phrase("Description", smallerFont));
             descriptionHeaderCell2.HorizontalAlignment = Element.ALIGN_CENTER;
             descriptionHeaderCell2.VerticalAlignment = Element.ALIGN_MIDDLE;
             descriptionHeaderCell2.Border = Rectangle.BOX;
             mainTable.AddCell(descriptionHeaderCell2);
 
-            var qtyHeaderCell = new PdfPCell(new Phrase("Qty", headerFont));
+            // Add Currency header only when not same currency
+            if (!doc.IsSameCurrency)
+            {
+                var currencyHeaderCell = new PdfPCell(new Phrase("Currency", smallerFont));
+                currencyHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                currencyHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                currencyHeaderCell.Border = Rectangle.BOX;
+                mainTable.AddCell(currencyHeaderCell);
+            }
+
+            var qtyHeaderCell = new PdfPCell(new Phrase("Qty", smallerFont));
             qtyHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             qtyHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             qtyHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(qtyHeaderCell);
 
-            var unitPriceHeaderCell = new PdfPCell(new Phrase("Unit Price", headerFont));
+            var unitPriceHeaderCell = new PdfPCell(new Phrase("Unit Price", smallerFont));
             unitPriceHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             unitPriceHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             unitPriceHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(unitPriceHeaderCell);
 
-
             var currencyLabel = doc.IsSameCurrency ? $"Total - {doc.Currency}" : "Total";
-            var totalHeaderCell = new PdfPCell(new Phrase(currencyLabel, headerFont));
+            var totalHeaderCell = new PdfPCell(new Phrase(currencyLabel, smallerFont));
             totalHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             totalHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             totalHeaderCell.Border = Rectangle.BOX;
@@ -574,7 +588,7 @@ ORDER BY pp.PersonPositionId";
                     }
                     // If configValues[i] is null, attachedText remains empty (blank)
 
-                    var attachedCell = new PdfPCell(new Phrase(attachedText, normalFont));
+                    var attachedCell = new PdfPCell(new Phrase(attachedText, smallerFont));
                     attachedCell.HorizontalAlignment = Element.ALIGN_CENTER;
                     attachedCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                     attachedCell.Border = Rectangle.BOX;
@@ -582,36 +596,43 @@ ORDER BY pp.PersonPositionId";
                 }
                 else
                 {
-                    AddCell(mainTable, "", normalFont, false);
+                    AddCell(mainTable, "", smallerFont, false);
                 }
 
                 // Column 3: Supplier
                 if (i < (doc.RequestedItems?.Count ?? 0))
                 {
-                    AddCell(mainTable, doc.RequestedItems[i].SupplierName ?? "", normalFont, false);
+                    AddCell(mainTable, doc.RequestedItems[i].SupplierName ?? "", smallerFont, false);
                 }
                 else
                 {
-                    AddCell(mainTable, "", normalFont, false);
+                    AddCell(mainTable, "", smallerFont, false);
                 }
 
-                // Columns 4-7: Cost summary items
+                // Columns 4+: Cost summary items
                 if (i < (doc.RequestedItems?.Count ?? 0))
                 {
                     var item = doc.RequestedItems[i];
                     var total = item.Qty * item.UnitPrice;
-                    AddCell(mainTable, item.Description ?? "", normalFont, false);
-                    AddCellLeft(mainTable, item.Qty.ToString(), normalFont, false);
-                    AddCellLeft(mainTable, item.UnitPrice.ToString("N2"), normalFont, false);
-                    AddCellLeft(mainTable, total.ToString("N2"), normalFont, false);
+                    AddCell(mainTable, item.Description ?? "", smallerFont, false);
 
+                    // Add currency cell only when not same currency
+                    if (!doc.IsSameCurrency)
+                    {
+                        AddCell(mainTable, item.Currency ?? "", smallerFont, false);
+                    }
+
+                    AddCellLeft(mainTable, item.Qty.ToString(), smallerFont, false);
+                    AddCellLeft(mainTable, item.UnitPrice.ToString("N2"), smallerFont, false);
+                    AddCellLeft(mainTable, total.ToString("N2"), smallerFont, false);
                 }
                 else
                 {
-                    // Empty cells for cost summary section (4 cells)
-                    for (int j = 0; j < 4; j++)
+                    // Empty cells for cost summary section
+                    int emptyCells = doc.IsSameCurrency ? 4 : 5; // 4 cells when same currency, 5 when different
+                    for (int j = 0; j < emptyCells; j++)
                     {
-                        AddCell(mainTable, "", normalFont, false);
+                        AddCell(mainTable, "", smallerFont, false);
                     }
                 }
             }
@@ -619,20 +640,45 @@ ORDER BY pp.PersonPositionId";
             document.Add(mainTable);
             document.Add(new Paragraph(" ", new Font(Font.FontFamily.HELVETICA, 4))); // small line break
 
-            //var secondTable = new PdfPTable(4) { WidthPercentage = 100 };
-            //secondTable.SetWidths(new float[] { 36f,14f,35f,15f });
-            //var smallerFont = FontFactory.GetFont(FontFactory.HELVETICA, 8);
-            //AddCell(secondTable, "Costing, Configuration & recommendation confirmed by", smallerFont, true);
-            //AddCell(secondTable, doc.ConfirmedBy, normalFont, true);
-            //AddCell(secondTable, $"Total Cost - {doc.Currency}", normalFont, true);
-            //PdfPCell cell = new PdfPCell(new Phrase(doc.TotalCost.ToString("N2"), normalFont));
-            //cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-            //secondTable.AddCell(cell);
-            //document.Add(secondTable);
+            var totaltable = new PdfPTable(3) { WidthPercentage = 100 };
+            totaltable.SetWidths(new float[] { 34,33,33 });
+            if (doc.IsSameCurrency)
+            {
+                AddCell(totaltable, $"Total ({doc.Currency}): {doc.TotalCost.ToString("N2")}", normalFont, true);
+                AddCell(totaltable, "", normalFont, true);
+                AddCell(totaltable, "", normalFont, true);
+            }
+            else
+            {
+                if (doc.TotalUSD > 0)
+                {
+                    AddCell(totaltable, $"Total (USD): {doc.TotalUSD.ToString("N2")}", normalFont, true);
+                }
+                else
+                {
+                    AddCell(totaltable, "", normalFont, true);
+                }
+                if (doc.TotalLKR > 0)
+                {
+                    AddCell(totaltable, $"Total (LKR): {doc.TotalLKR.ToString("N2")}", normalFont, true);
+                }
+                else
+                {
+                    AddCell(totaltable, "", normalFont, true);
+                }
+                if (doc.TotalINR > 0)
+                {
+                    AddCell(totaltable, $"Total (INR): {doc.TotalINR.ToString("N2")}", normalFont, true);
+                }
+                else
+                {
+                    AddCell(totaltable, "", normalFont, true);
+                }
+            }
+            document.Add(totaltable);
 
             var confirmTable = new PdfPTable(3) { WidthPercentage = 100 };
-            confirmTable.SetWidths(new float[] { 50, 25,25 });
-            
+            confirmTable.SetWidths(new float[] { 50, 25, 25 });
             AddCell(confirmTable, "Costing, Configuration & recommendation confirmed by", normalFont, true);
             AddCell(confirmTable, doc.ConfirmedBy, normalFont, true);
             AddCell(confirmTable, "", normalFont, true); // Add empty third cell
