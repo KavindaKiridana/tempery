@@ -64,7 +64,6 @@ namespace WebApplication1
             {
                 sqlconn.Open();
 
-                // 1) Get base document + human-readable names (NO Template joins here)
                 string query = @"
 SELECT 
     d.*,
@@ -124,7 +123,6 @@ WHERE d.DocumentId = @DocumentId";
                                 EIDModel = reader["EIDModel"] == DBNull.Value ? null : reader["EIDModel"].ToString(),
                                 Quotation = reader["Quotation"] == DBNull.Value ? (bool?)null : Convert.ToBoolean(reader["Quotation"]),
                                 Configuration = reader["Configuration"] == DBNull.Value ? (bool?)null : Convert.ToBoolean(reader["Configuration"]),
-                                // DB column is CostBeakdown (typo in DB), map to CostBreakdown property
                                 CostBreakdown = reader["CostBeakdown"] == DBNull.Value ? (bool?)null : Convert.ToBoolean(reader["CostBeakdown"]),
                                 ConfirmedBy = reader["ConfirmedByUserName"].ToString()
                             };
@@ -140,7 +138,13 @@ WHERE d.DocumentId = @DocumentId";
 
                     // Keep your existing calls
                     doc.RequestedItems = GetRequestedItems(documentId);
-                    doc.Currency = GetCurrency(documentId);
+                    var currencySummary = CalculateCurrencySummary(doc.RequestedItems);
+                    doc.IsSameCurrency = currencySummary.IsSameCurrency;
+                    doc.Currency = currencySummary.Currency;
+                    doc.TotalCost = currencySummary.TotalCost;
+                    doc.TotalLKR = currencySummary.TotalLKR;
+                    doc.TotalUSD = currencySummary.TotalUSD;
+                    doc.TotalINR = currencySummary.TotalINR;
                 }
             }
             finally
@@ -165,14 +169,7 @@ SELECT
 FROM PersonPosition pp
 INNER JOIN [Users] u ON u.UsersId = pp.PersonId
 WHERE pp.FlexibleTemplateId = @FlexibleTemplateId
-ORDER BY 
-    CASE 
-        WHEN pp.Position = 'CEO' THEN 1
-        WHEN pp.Position = 'IT Manager' THEN 2
-        WHEN pp.Position = 'MD' THEN 3
-        ELSE 99
-    END,
-    u.FullName;";
+ORDER BY pp.PersonPositionId";
 
             using (var cmd = new SqlCommand(sql, sqlconn))
             {
@@ -190,10 +187,49 @@ ORDER BY
                     }
                 }
             }
-
             return list;
         }
 
+        private CurrencySummary CalculateCurrencySummary(List<RequestedItemModel> requestedItems)
+        {
+            var summary = new CurrencySummary();
+
+            if (requestedItems == null || requestedItems.Count == 0)
+                return summary;
+
+            // Get distinct currencies
+            var distinctCurrencies = requestedItems
+                .Where(item => !string.IsNullOrEmpty(item.Currency))
+                .Select(item => item.Currency.ToUpper())
+                .Distinct()
+                .ToList();
+
+            // Check if all items have the same currency
+            summary.IsSameCurrency = distinctCurrencies.Count == 1;
+
+            if (summary.IsSameCurrency)
+            {
+                summary.Currency = distinctCurrencies.First();
+                summary.TotalCost = requestedItems.Sum(item => item.Qty * item.UnitPrice);
+            }
+            else
+            {
+                // Calculate totals for each currency
+                summary.TotalLKR = requestedItems
+                    .Where(item => item.Currency?.ToUpper() == "LKR")
+                    .Sum(item => item.Qty * item.UnitPrice);
+
+                summary.TotalUSD = requestedItems
+                    .Where(item => item.Currency?.ToUpper() == "USD")
+                    .Sum(item => item.Qty * item.UnitPrice);
+
+                summary.TotalINR = requestedItems
+                    .Where(item => item.Currency?.ToUpper() == "INR")
+                    .Sum(item => item.Qty * item.UnitPrice);
+            }
+
+            return summary;
+        }
 
         private List<RequestedItemModel> GetRequestedItems(int documentId)
         {
@@ -204,6 +240,7 @@ ORDER BY
                     rip.Description,
                     rip.Qty,
                     rip.UnitPrice,
+                    rip.Currency,
                     s.SName as SupplierName
                 FROM RequestedItemPayments rip
                 INNER JOIN Supplier s ON rip.SupplierId = s.SupplierId
@@ -223,6 +260,7 @@ ORDER BY
                             Description = reader["Description"].ToString(),
                             Qty = Convert.ToInt32(reader["Qty"]),
                             UnitPrice = Convert.ToDecimal(reader["UnitPrice"]),
+                            Currency= reader["Currency"].ToString(),
                             SupplierName = reader["SupplierName"].ToString()
                         });
                     }
@@ -232,30 +270,6 @@ ORDER BY
             return items;
         }
 
-
-        private string GetCurrency(int documentId)
-        {
-            string currency = "LKR";
-
-            string query = @"
-                SELECT TOP 1 s.Currency
-                FROM RequestedItemPayments rip
-                INNER JOIN Supplier s ON rip.SupplierId = s.SupplierId
-                WHERE rip.DocumentID = @DocumentId";
-
-            using (SqlCommand cmd = new SqlCommand(query, sqlconn))
-            {
-                cmd.Parameters.AddWithValue("@DocumentId", documentId);
-
-                var result = cmd.ExecuteScalar();
-                if (result != null)
-                {
-                    currency = result.ToString();
-                }
-            }
-
-            return currency;
-        }
 
         private string GenerateSerialNumber(DocumentModel doc)
         {
@@ -292,7 +306,6 @@ ORDER BY
                 CreateCostSummaryTable(document, doc, headerFont, normalFont);
                 // Comments and Recommendations
                 CreateCommentsSection(document, doc, headerFont, normalFont);
-                // Signatures
                 
 
                 var footerFont = FontFactory.GetFont(FontFactory.HELVETICA, 8);
@@ -469,7 +482,8 @@ ORDER BY
             mainTable.SetWidths(new float[] { 24f, 10f, 25f, 23f, 5f, 12f, 15f });
 
             // First row - Main headers
-            var configHeaderCell = new PdfPCell(new Phrase("Costing & Configuration (If repair only quotation will be attached)", headerFont));
+            var smallerFont = FontFactory.GetFont(FontFactory.HELVETICA, 8);
+            var configHeaderCell = new PdfPCell(new Phrase("Costing & Configuration (If repair only quotation will be attached)", smallerFont));
             configHeaderCell.Colspan = 2; // Columns 1-2
             configHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             configHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -484,13 +498,13 @@ ORDER BY
             mainTable.AddCell(costHeaderCell);
 
             // Second row - Sub headers
-            var descriptionHeaderCell = new PdfPCell(new Phrase("Description", headerFont));
+            var descriptionHeaderCell = new PdfPCell(new Phrase("Description", smallerFont));
             descriptionHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             descriptionHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             descriptionHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(descriptionHeaderCell);
 
-            var attachedHeaderCell = new PdfPCell(new Phrase("Attached", headerFont));
+            var attachedHeaderCell = new PdfPCell(new Phrase("Attached", smallerFont));
             attachedHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             attachedHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             attachedHeaderCell.Border = Rectangle.BOX;
@@ -520,7 +534,8 @@ ORDER BY
             unitPriceHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(unitPriceHeaderCell);
 
-            var totalHeaderCell = new PdfPCell(new Phrase($"Total - {doc.Currency}", headerFont));
+            //   var totalHeaderCell = new PdfPCell(new Phrase($"Total - {doc.Currency}", headerFont));
+            var totalHeaderCell = new PdfPCell(new Phrase("Total", headerFont));
             totalHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             totalHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             totalHeaderCell.Border = Rectangle.BOX;
@@ -537,11 +552,11 @@ ORDER BY
                 // Column 1: Configuration items (Description)
                 if (i < configItems.Length)
                 {
-                    AddCell(mainTable, configItems[i], normalFont, false);
+                    AddCell(mainTable, configItems[i], smallerFont, false);
                 }
                 else
                 {
-                    AddCell(mainTable, "", normalFont, false);
+                    AddCell(mainTable, "", smallerFont, false);
                 }
 
                 // Column 2: Attached status
@@ -616,7 +631,7 @@ ORDER BY
 
             var confirmTable = new PdfPTable(3) { WidthPercentage = 100 };
             confirmTable.SetWidths(new float[] { 50, 25,25 });
-            var smallerFont = FontFactory.GetFont(FontFactory.HELVETICA, 8);
+            
             AddCell(confirmTable, "Costing, Configuration & recommendation confirmed by", normalFont, true);
             AddCell(confirmTable, doc.ConfirmedBy, normalFont, true);
             AddCell(confirmTable, "", normalFont, true); // Add empty third cell
@@ -799,7 +814,6 @@ ORDER BY
         public string RequestedByName { get; set; }
         public string DepartmentHeadName { get; set; }
         public bool Budgeted { get; set; }
-        public decimal TotalCost { get; set; }
         public string ITDivisionComment { get; set; }
         public string ITDivisionRecommendation { get; set; }
         public string Remarks { get; set; }
@@ -812,11 +826,16 @@ ORDER BY
         public bool? Configuration { get; set; }
         public bool? CostBreakdown { get; set; } 
         public List<RequestedItemModel> RequestedItems { get; set; } = new List<RequestedItemModel>();
-        public string Currency { get; set; } = "LKR";
         public string Reason { get; set; }
         public string ConfirmedBy { get; set; }
         public int NoOfAuthorizers { get; set; }
         public List<AuthorizerInfo> Authorizers { get; set; } = new List<AuthorizerInfo>();
+        public string Currency { get; set; }
+        public decimal TotalCost { get; set; }
+        public decimal TotalLKR { get; set; }
+        public decimal TotalUSD { get; set; }
+        public decimal TotalINR { get; set; }
+        public bool IsSameCurrency { get; set; }
     }
 
     public class AuthorizerInfo
@@ -830,7 +849,18 @@ ORDER BY
         public string Description { get; set; }
         public int Qty { get; set; }
         public decimal UnitPrice { get; set; }
+        public string Currency { get; set; }
         public string SupplierName { get; set; }
+    }
+
+    public class CurrencySummary
+    {
+        public bool IsSameCurrency { get; set; }
+        public string Currency { get; set; }
+        public decimal TotalCost { get; set; }
+        public decimal TotalLKR { get; set; }
+        public decimal TotalUSD { get; set; }
+        public decimal TotalINR { get; set; }
     }
 
     public class FooterPageEventHelper : PdfPageEventHelper
