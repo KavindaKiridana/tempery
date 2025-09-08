@@ -34,6 +34,10 @@ namespace ITAssetHandling
                 LoadDivHeads();
                 LoadConfirmedBy();
                 LoadSuppliers();
+
+                lbltotalINR.Visible = false;
+                lbltotalLKR.Visible = false;
+                lbltotalUSD.Visible = false;
             }
         }
 
@@ -101,7 +105,7 @@ namespace ITAssetHandling
                 }
             }
         }
-       
+
         //function for load departments list
         private void LoadDepartment()
         {
@@ -246,6 +250,7 @@ namespace ITAssetHandling
         private void LoadTemplates(decimal totalCost, string relevantCurrency)
         {
             string currencyForTemplate = relevantCurrency;
+            ddlTemplate.Items.Clear();
 
             if (ddlCompany.SelectedValue == null || string.IsNullOrEmpty(ddlCompany.SelectedValue) || ddlCompany.SelectedValue == "0")
             {
@@ -331,7 +336,7 @@ namespace ITAssetHandling
                 }
 
                 SqlDataReader reader = cmd.ExecuteReader();
-                ddlTemplate.Items.Clear();
+
 
                 // Group results by TemplateId
                 Dictionary<string, List<string>> templateData = new Dictionary<string, List<string>>();
@@ -457,12 +462,13 @@ namespace ITAssetHandling
                 }
             }
 
-            if(totalLKR!=0 || totalINR==0 || totalUSD == 0)
+            ddlTemplate.Items.Clear();
+            if (totalLKR > 0 && totalINR == 0 && totalUSD == 0)
             {
                 string relevantCurrency = "LKR";
                 LoadTemplates((decimal)totalLKR, relevantCurrency);
             }
-            else
+            else if (totalLKR > 0 || totalINR > 0 || totalUSD > 0)
             {
                 string relevantCurrency = "NoLKR";
                 LoadTemplates((decimal)totalLKR, relevantCurrency);
@@ -472,9 +478,25 @@ namespace ITAssetHandling
 
         private void DisplayCurrencyTotals(float totalUSD, float totalLKR, float totalINR)
         {
-            lbltotalINR.Text = "Total INR: " + totalINR.ToString("F2");
-            lbltotalLKR.Text = "Total LKR: " + totalLKR.ToString("F2");
-            lbltotalUSD.Text = "Total USD: " + totalUSD.ToString("F2");
+            lbltotalINR.Visible = false;
+            lbltotalLKR.Visible = false;
+            lbltotalUSD.Visible = false;
+
+            if (totalUSD > 0)
+            {
+                lbltotalUSD.Visible = true;
+                lbltotalUSD.Text = "Total USD: " + totalUSD.ToString("F2");
+            }
+            if (totalINR > 0)
+            {
+                lbltotalINR.Visible = true;
+                lbltotalINR.Text = "Total INR: " + totalINR.ToString("F2");
+            }
+            if (totalLKR > 0)
+            {
+                lbltotalLKR.Visible = true;
+                lbltotalLKR.Text = "Total LKR: " + totalLKR.ToString("F2");
+            }
         }
 
         private bool ValidateInputs()
@@ -702,10 +724,14 @@ namespace ITAssetHandling
             string divisionComments = txtITComments.Text; // need to put validtion for prevant null values
             string recommendation = txtITDivRecommend.Text; // Can be null
             string remark = txtRemark.Text; // Can be null
-            // Get TotalCost from the label (assuming it's calculated correctly)
-            decimal totalCost = 0;
-            
-            // --- Save data to Document table ---
+
+            if (string.IsNullOrWhiteSpace(txtITComments.Text))
+            {
+                Response.Write("<script>alert('IT Division Comments cannot be empty. Please provide a comment.');</script>");
+                return; 
+            }
+
+            // Save data to Document table 
             int newDocumentId = -1; // Variable to hold the ID of the newly inserted document
             try
             {
@@ -742,7 +768,6 @@ namespace ITAssetHandling
                     cmd.Parameters.AddWithValue("@ITDivisionComment", divisionComments ?? (object)DBNull.Value); // Should not be null per requirement, but handle just in case
                     cmd.Parameters.AddWithValue("@ITDivisionRecommendation", (object)recommendation ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Remarks", (object)remark ?? DBNull.Value);
-                   // cmd.Parameters.AddWithValue("@TotalCost", totalCost); // Use the parsed totalCost
                     cmd.Parameters.AddWithValue("@Budgeted", budgeted);
                     // Handle potentially null DateTime
                     cmd.Parameters.AddWithValue("@EIDDateOfPurchase", (object)dateOfPurchase ?? DBNull.Value);
@@ -768,18 +793,10 @@ namespace ITAssetHandling
                 // Log the full exception details server-side for better debugging
                 System.Diagnostics.Debug.WriteLine("Document Insert Error: " + ex.ToString());
 
-                // Show a more informative message to the user (be cautious with ex.Message in production)
-                // It's often better to show a generic message to the user and log details server-side.
-                // For debugging, you can temporarily show more, but be careful about exposing internal errors.
-                // Response.Write("<script>alert('An error occurred while submitting the form: " + ex.Message + "');</script>");
 
                 // Show a generic message to the user for better security/usability during development
                 Response.Write("<script>alert('An error occurred while submitting the form. Please check the logs or contact support. \\n\\n(Dev Info: " + ex.Message.Replace("'", "\\'") + ")');</script>");
 
-                // Consider logging the full exception (ex.ToString()) to a file or dedicated logging system in production
-                // Example (requires using System.IO; and appropriate permissions):
-                // string logPath = Server.MapPath("~/App_Data/ErrorLog.txt");
-                // File.AppendAllText(logPath, DateTime.Now.ToString() + " - Document Insert Error: " + ex.ToString() + Environment.NewLine);
             }
             finally
             {
@@ -791,7 +808,7 @@ namespace ITAssetHandling
             if (newDocumentId > 0)
             {
                 // --- Save data to RequestedItemPayments table ---
-              //  updateRequestedItemPaymentsTable(newDocumentId);
+                updateRequestedItemPaymentsTable(newDocumentId);
                 GeneratePDF generatePDF = new GeneratePDF();
                 generatePDF.GetPDF(newDocumentId);
                 // FIXED: Show alert BEFORE redirect, and use proper redirect approach
@@ -807,68 +824,37 @@ namespace ITAssetHandling
                 Response.Write("<script>alert('Error: Failed to create document record.');</script>");
             }
         }
-        //protected void updateRequestedItemPaymentsTable(int DocumentID)
-        //{
-        //    // Array of your total labels for easy iteration
-        //    Label[] totalLabels = { lblTotal1, lblTotal2, lblTotal3, lblTotal4, lblTotal5, lblTotal6 };
-        //    // Count how many labels have content
-        //    int filledRecords = totalLabels.Count(label => !string.IsNullOrEmpty(label.Text));
-        //    switch (filledRecords)
-        //    {
-        //        case 0:
-        //            // No records entered
-        //            // Handle this case if needed, maybe show an error?
-        //            // For now, we'll treat it like case 1 or just let it fall through logically
-        //            // might want to validate this elsewhere before calling this function.
-        //            break;
-        //        case 1:
-        //            // User entered only the first record
-        //            SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
-        //            break;
-        //        case 2:
-        //            // User entered the first two records.
-        //            SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
-        //            SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
-        //            break;
-        //        case 3:
-        //            // User entered the first three records
-        //            SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
-        //            SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
-        //            SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
-        //            break;
-        //        case 4:
-        //            // ... your logic for 4 records ...
-        //            SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
-        //            SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
-        //            SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
-        //            SaveRecordData(4, DocumentID, ddlSupply4.SelectedValue, txtDetail4.Text, txtQty4.Text, txtPrice4.Text, lblTotal4.Text);
-        //            break;
-        //        case 5:
-        //            // ... your logic for 5 records ...
-        //            SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
-        //            SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
-        //            SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
-        //            SaveRecordData(4, DocumentID, ddlSupply4.SelectedValue, txtDetail4.Text, txtQty4.Text, txtPrice4.Text, lblTotal4.Text);
-        //            SaveRecordData(5, DocumentID, ddlSupply5.SelectedValue, txtDetail5.Text, txtQty5.Text, txtPrice5.Text, lblTotal5.Text);
-        //            break;
-        //        case 6:
-        //            // User entered all records
-        //            SaveRecordData(1, DocumentID, ddlSupply1.SelectedValue, txtDetail1.Text, txtQty1.Text, txtPrice1.Text, lblTotal1.Text);
-        //            SaveRecordData(2, DocumentID, ddlSupply2.SelectedValue, txtDetail2.Text, txtQty2.Text, txtPrice2.Text, lblTotal2.Text);
-        //            SaveRecordData(3, DocumentID, ddlSupply3.SelectedValue, txtDetail3.Text, txtQty3.Text, txtPrice3.Text, lblTotal3.Text);
-        //            SaveRecordData(4, DocumentID, ddlSupply4.SelectedValue, txtDetail4.Text, txtQty4.Text, txtPrice4.Text, lblTotal4.Text);
-        //            SaveRecordData(5, DocumentID, ddlSupply5.SelectedValue, txtDetail5.Text, txtQty5.Text, txtPrice5.Text, lblTotal5.Text);
-        //            SaveRecordData(6, DocumentID, ddlSupply6.SelectedValue, txtDetail6.Text, txtQty6.Text, txtPrice6.Text, lblTotal6.Text);
-        //            break;
-        //        default:
-        //            // This case shouldn't happen with the logic above
-        //            // Handle unexpected state if necessary
-        //            break;
-        //    }
-        //}
+
+
+        protected void updateRequestedItemPaymentsTable(int DocumentID)
+        {
+            DataTable dt = GetPaymentDataTable();
+
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                int recordNumber = 1;
+                foreach (DataRow row in dt.Rows)
+                {
+                    string supplierId = row["SupplierId"].ToString();
+                    string description = row["Detail"].ToString();
+                    string quantity = row["Qty"].ToString();
+                    string unitPrice = row["UnitPrice"].ToString();
+                    string total = row["TotalPrice"].ToString();
+                    string recordCurrency = row["Currency"].ToString();
+
+                    SaveRecordData(recordNumber, DocumentID, supplierId, description, quantity, unitPrice, total, recordCurrency);
+                    recordNumber++;
+                }
+            }
+            else
+            {
+                // Handle case where no payment records exist
+                Response.Write("<script>alert('No payment records to save.');</script>");
+            }
+        }
 
         // Helper method to encapsulate saving logic for a single row
-        private void SaveRecordData(int recordNumber, int DocumentID, string supplierId, string description, string quantity, string unitPrice, string total)
+        private void SaveRecordData(int recordNumber, int DocumentID, string supplierId, string description, string quantity, string unitPrice, string total, string recordcurrency)
         {
             // Implement  database saving logic here for a single record row
             // Use the parameters passed in.
@@ -877,14 +863,15 @@ namespace ITAssetHandling
                 checkconnection();
                 sqlconn.Open();
                 string query = @"INSERT INTO RequestedItemPayments
-(UnitPrice, Qty, Description, DocumentID, SupplierId) VALUES
-(@UnitPrice,@Quantity,@Description,@documentid,@SupplierId)";
+(UnitPrice, Qty, Description, DocumentID, SupplierId,Currency) VALUES
+(@UnitPrice,@Quantity,@Description,@documentid,@SupplierId,@Currency)";
                 SqlCommand cmd = new SqlCommand(query, sqlconn);
                 cmd.Parameters.AddWithValue("@documentid", DocumentID);
                 cmd.Parameters.AddWithValue("@SupplierId", supplierId);
                 cmd.Parameters.AddWithValue("@Description", description);
                 cmd.Parameters.AddWithValue("@Quantity", quantity);
                 cmd.Parameters.AddWithValue("@UnitPrice", unitPrice);
+                cmd.Parameters.AddWithValue("@Currency", recordcurrency);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)

@@ -240,15 +240,6 @@ namespace ITAssetHandling
         protected global::System.Web.UI.WebControls.GridView GridView;
 
         /// <summary>
-        /// lbltotalINR control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbltotalINR;
-
-        /// <summary>
         /// lbltotalUSD control.
         /// </summary>
         /// <remarks>
@@ -265,6 +256,15 @@ namespace ITAssetHandling
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbltotalLKR;
+
+        /// <summary>
+        /// lbltotalINR control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbltotalINR;
 
         /// <summary>
         /// ddlConfirmedBy control.

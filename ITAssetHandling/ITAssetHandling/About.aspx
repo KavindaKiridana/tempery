@@ -134,8 +134,9 @@
                                         <!-- start -->
                                         <div class="col-12 mb-3">
                                             <h5 class="border-bottom pb-2">Cost Summary & Recommended Supplier</h5>
+                                            <asp:Label ID="lblPaymnetRecord" runat="server"></asp:Label>
                                         </div>
-                                        <asp:Label ID="lblPaymnetRecord" runat="server"></asp:Label>
+
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Supplier</label>
                                             <asp:DropDownList ID="ddlSupply" runat="server" CssClass="form-select">
@@ -162,10 +163,14 @@
                                             <asp:TextBox ID="txtDetail" runat="server" CssClass="form-control" />
                                         </div>
                                         <!-- end -->
+                                        <div class="col-md-4 mb-3">
+
+                                            <asp:Button ID="btnAddPayment" runat="server" Text="Add Payment Record" CssClass="btn btn-primary" OnClick="btnAddPayment_Click" />
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
-                                            <asp:Button ID="btnAddPayment" runat="server" Text="Add Payment Record" CssClass="btn btn-primary" OnClick="btnAddPayment_Click" />
+                                            <!-- add button -->
                                         </div>
                                     </div>
 
@@ -198,13 +203,16 @@
                                                     </div>
                                                 </EmptyDataTemplate>
                                             </asp:GridView>
+
+                                            <!-- Labels on one line -->
+                                            <div class="d-flex justify-content-around mt-2">
+                                                <asp:Label  ID="lbltotalUSD" runat="server" />
+                                                <asp:Label  ID="lbltotalLKR" runat="server" />
+                                                <asp:Label  ID="lbltotalINR" runat="server" />
+                                            </div>
                                         </div>
                                     </div>
                                     <!--gridview end here-->
-
-                                    <asp:Label ID="lbltotalINR" runat="server"></asp:Label>
-                                    <asp:Label ID="lbltotalUSD" runat="server"></asp:Label>
-                                    <asp:Label ID="lbltotalLKR" runat="server"></asp:Label>
 
                                     <!-- Confirmation -->
                                     <div class="row mb-4">
@@ -218,12 +226,6 @@
                                                     </asp:DropDownList>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Authorizing Template -->
-                                    <div class="row mb-4">
-                                        <div class="col-md-8 offset-md-2">
                                             <div class="row align-items-center">
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Authorizing Template</label>
@@ -235,6 +237,12 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Authorizing Template -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-8 offset-md-2">
+                                        </div>
+                                    </div>
                                 </ContentTemplate>
                             </asp:UpdatePanel>
 
@@ -242,7 +250,7 @@
                             <div class="row mb-4">
                                 <div class="col-12 mb-3">
                                     <h5 class="border-bottom pb-2">IT Division Comments</h5>
-                                    <asp:TextBox ID="txtITComments" runat="server" TextMode="MultiLine" Rows="3" CssClass="form-control w-100" Style="min-width: 100%"/>
+                                    <asp:TextBox ID="txtITComments" runat="server" TextMode="MultiLine" Rows="3" CssClass="form-control w-100" Style="min-width: 100%" />
                                 </div>
                             </div>
 
