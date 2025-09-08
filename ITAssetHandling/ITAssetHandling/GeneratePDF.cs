@@ -534,8 +534,9 @@ ORDER BY pp.PersonPositionId";
             unitPriceHeaderCell.Border = Rectangle.BOX;
             mainTable.AddCell(unitPriceHeaderCell);
 
-            //   var totalHeaderCell = new PdfPCell(new Phrase($"Total - {doc.Currency}", headerFont));
-            var totalHeaderCell = new PdfPCell(new Phrase("Total", headerFont));
+
+            var currencyLabel = doc.IsSameCurrency ? $"Total - {doc.Currency}" : "Total";
+            var totalHeaderCell = new PdfPCell(new Phrase(currencyLabel, headerFont));
             totalHeaderCell.HorizontalAlignment = Element.ALIGN_CENTER;
             totalHeaderCell.VerticalAlignment = Element.ALIGN_MIDDLE;
             totalHeaderCell.Border = Rectangle.BOX;
