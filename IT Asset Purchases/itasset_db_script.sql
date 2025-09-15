@@ -150,7 +150,6 @@ INSERT INTO Category (CategoryName, Discription) VALUES
 ('Repair', 'Any Item which is sent to repair'),
 ('Others', 'Any items which is not listed above');
 
-PRINT 'ITAssetRequest database and tables created successfully!';
 
 
 
