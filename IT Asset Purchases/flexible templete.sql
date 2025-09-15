@@ -20,3 +20,22 @@ CONSTRAINT UQ_PersonPosition UNIQUE (FlexibleTemplateId, PersonId) -- Composite 
 
 ALTER TABLE RequestedItemPayments
 ADD Currency VARCHAR(50);
+
+
+
+CREATE TABLE Category (
+    CategoryId INT PRIMARY KEY IDENTITY(1,1),
+    CategoryName VARCHAR(50) NOT NULL,
+    Discription VARCHAR(200) NULL
+);
+
+INSERT INTO Category (CategoryName, Discription) VALUES
+('Laptop/Desktop', 'Laptop & Desktop'),
+('Printers/Photocopy', 'Photocopy, All kind of Printers'),
+('UPS', 'UPS'),
+('License', 'All kind of License'),
+('AMC', 'AMC Items'),
+('Rent', 'Rented Laptops or any other'),
+('Monitor', 'Monitors'),
+('Repair', 'Any Item which is sent to repair'),
+('Others', 'Any items which is not listed above');
