@@ -68,9 +68,10 @@ CREATE TABLE Document (
     UserId INT NOT NULL, -- edited user
     DepartmentHead INT NOT NULL, -- department Head user
     TemplateId int NOT NULL,
+    CategoryId INT NOT NULL;
     SavedTime DATETIME DEFAULT GETDATE(),
     SerialNo VARCHAR(255),
-    Status VARCHAR(50) CHECK (Status IN ('pending', 'approved', 'rejected')),
+    Status VARCHAR(50) ,
     ITDivisionComment TEXT,
     ITDivisionRecommendation TEXT,
     Remarks TEXT,
@@ -85,13 +86,15 @@ CREATE TABLE Document (
     Configuration BIT,
     CostBeakdown BIT,
     ConfirmedBy int NOT NULL,
+    Location VARCHAR(255) NOT NULL;
     FOREIGN KEY (ConfirmedBy) REFERENCES [User](UserId),
     FOREIGN KEY (ReasonId) REFERENCES Reason(ReasonId),
     FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
     FOREIGN KEY (DepartmentId) REFERENCES Department(DepartmentId),
     FOREIGN KEY (UserId) REFERENCES [User](UserId),
     FOREIGN key(TemplateId) REFERENCES [FlexibleTemplate](FlexibleTemplateId),
-    FOREIGN KEY (DepartmentHead) REFERENCES [User](UserId)
+    FOREIGN KEY (DepartmentHead) REFERENCES [User](UserId),
+    FOREIGN KEY (CategoryId) REFERENCES Category(CategoryId)
 );
 
 -- Create RequestedItemPayments table
@@ -136,7 +139,8 @@ CREATE TABLE PersonPosition (
 CREATE TABLE Category (
     CategoryId INT PRIMARY KEY IDENTITY(1,1),
     CategoryName VARCHAR(50) NOT NULL,
-    Discription VARCHAR(200) NULL
+    Discription VARCHAR(200) NULL,
+    IsActive BIT NOT NULL DEFAULT 1
 );
 
 INSERT INTO Category (CategoryName, Discription) VALUES
