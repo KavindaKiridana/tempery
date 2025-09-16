@@ -26,7 +26,8 @@ ADD Currency VARCHAR(50);
 CREATE TABLE Category (
     CategoryId INT PRIMARY KEY IDENTITY(1,1),
     CategoryName VARCHAR(50) NOT NULL,
-    Discription VARCHAR(200) NULL
+    Discription VARCHAR(200) NULL,
+    IsActive BIT NOT NULL DEFAULT 1
 );
 
 INSERT INTO Category (CategoryName, Discription) VALUES
