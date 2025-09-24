@@ -9,14 +9,14 @@ GO
 -- Create Reason table
 CREATE TABLE Reason (
     ReasonId INT IDENTITY(1,1) PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
+    RName VARCHAR(255) NOT NULL,
     IsActive BIT NOT NULL DEFAULT(1)
 );
 
 -- Create Company table
 CREATE TABLE Company (
     CompanyId INT IDENTITY(1,1) PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
+    CName VARCHAR(255) NOT NULL,
     Flag VARCHAR(255) NOT NULL,
 	IsActive BIT NOT NULL DEFAULT(1)
 );
@@ -24,14 +24,14 @@ CREATE TABLE Company (
 -- Create Department table
 CREATE TABLE Department (
     DepartmentId INT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
+    DName VARCHAR(255) NOT NULL,
 	IsActive BIT not null default(1)
 );
 
 -- Create Supplier table
 CREATE TABLE Supplier (
     SupplierId INT IDENTITY(1,1) PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
+    SName VARCHAR(255) NOT NULL,
     Currency VARCHAR(50),
     IsActive bit not null default(1)
 );
@@ -56,7 +56,7 @@ CREATE TABLE Document (
     UsersId INT NOT NULL, -- edited user
     DepartmentHead INT NOT NULL, -- department Head user
     TemplateId int NOT NULL,
-    CategoryId INT NOT NULL;
+    CategoryId INT NOT NULL,
     ConfirmedBy int NOT NULL,
     SavedTime DATETIME DEFAULT GETDATE(),
     SerialNo VARCHAR(255),
@@ -73,7 +73,7 @@ CREATE TABLE Document (
     Quotation BIT,
     Configuration BIT,
     CostBeakdown BIT,
-    Location VARCHAR(255) NOT NULL;
+    Location VARCHAR(255) NOT NULL,
  SentToHO DATE NULL,
  ReceivedToHO DATE NULL,
  HandoverDate DATE NULL,
@@ -106,7 +106,6 @@ CREATE TABLE RequestedItemPayments (
     FOREIGN KEY (DocumentID) REFERENCES Document(DocumentId),
     FOREIGN KEY (SupplierId) REFERENCES Supplier(SupplierId)
 );
-
 
 CREATE TABLE FlexibleTemplate (
     FlexibleTemplateId int IDENTITY(1,1) PRIMARY KEY,
