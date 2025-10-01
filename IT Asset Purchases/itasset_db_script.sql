@@ -132,6 +132,13 @@ CREATE TABLE Category (
     IsActive BIT NOT NULL DEFAULT 1
 );
 
+CREATE TABLE SerialNo (
+    CompanyId INT NOT NULL,
+    Year INT NOT NULL,
+    DocNo INT NOT NULL DEFAULT 0,
+    CONSTRAINT PK_SerialNo PRIMARY KEY (CompanyId, Year),
+    CONSTRAINT FK_SerialNo_Company FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId)
+);
 
 
 
