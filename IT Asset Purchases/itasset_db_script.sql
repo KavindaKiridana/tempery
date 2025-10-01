@@ -57,6 +57,7 @@ CREATE TABLE Document (
     DepartmentHead INT NOT NULL, -- department Head user
     TemplateId int NOT NULL,
     CategoryId INT NOT NULL,
+    UsedByToWhom VARCHAR NOT NULL,
     ConfirmedBy int NOT NULL,
     SavedTime DATETIME DEFAULT GETDATE(),
     SerialNo VARCHAR(255),
