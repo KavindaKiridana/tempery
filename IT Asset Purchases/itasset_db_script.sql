@@ -85,7 +85,7 @@ CREATE TABLE Document (
  PaymentReady BIT NULL,
  IsSellerPaid BIT NULL,
  FinalRemarks VARCHAR(MAX) NULL,
-    FOREIGN KEY (ConfirmedBy) REFERENCES [User](UsersId),
+    FOREIGN KEY (ConfirmedBy) REFERENCES [Users](UsersId),
     FOREIGN KEY (ReasonId) REFERENCES Reason(ReasonId),
     FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
     FOREIGN KEY (DepartmentId) REFERENCES Department(DepartmentId),
@@ -141,6 +141,74 @@ CREATE TABLE SerialNo (
 );
 
 
+-- Create UserCompanyAccess table
+CREATE TABLE UserCompanyAccess (
+    UserCompanyAccessId INT IDENTITY(1,1) PRIMARY KEY,
+    UsersId INT NOT NULL,
+    CompanyId INT NOT NULL,
+    IsActive BIT NOT NULL DEFAULT(1),
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UsersId) REFERENCES [Users](UsersId),
+    FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
+    CONSTRAINT UQ_UserCompany UNIQUE (UsersId, CompanyId)
+);
 
 
+INSERT INTO UserCompanyAccess (UsersId, CompanyId, IsActive) VALUES
+-- Chamika (UserId 22)
+(22, 20, 1), -- Renuka Agri Foods PLC
+(22, 21, 1), -- Renuka Agri Organics Ltd
+(22, 22, 1), -- Shaw Wallace Ceylon Ltd
+(22, 23, 1), -- Richlife Dairies Limited
+(22, 24, 1), -- Kandy Plantations Limited
+(22, 25, 1), -- Galle Face Properties
+(22, 26, 1), -- Coco Lanka (Pvt) Ltd
+(22, 27, 1), -- Renuka Teas Ceylon (Pvt) Ltd
+-- Kavinda (UserId 25)
+(25, 20, 1), -- Renuka Agri Foods PLC
+(25, 21, 1), -- Renuka Agri Organics Ltd
+(25, 22, 1), -- Shaw Wallace Ceylon Ltd
+(25, 23, 1), -- Richlife Dairies Limited
+(25, 24, 1), -- Kandy Plantations Limited
+(25, 25, 1), -- Galle Face Properties
+(25, 26, 1), -- Coco Lanka (Pvt) Ltd
+(25, 27, 1), -- Renuka Teas Ceylon (Pvt) Ltd
+-- Lakshan (UserId 27)
+(27, 20, 1), -- Renuka Agri Foods PLC
+(27, 21, 1), -- Renuka Agri Organics Ltd
+(27, 22, 1), -- Shaw Wallace Ceylon Ltd
+(27, 23, 1), -- Richlife Dairies Limited
+(27, 24, 1), -- Kandy Plantations Limited
+(27, 25, 1), -- Galle Face Properties
+(27, 26, 1), -- Coco Lanka (Pvt) Ltd
+(27, 27, 1), -- Renuka Teas Ceylon (Pvt) Ltd
+-- Thilina (UserId 17)
+(17, 20, 1), -- Renuka Agri Foods PLC
+(17, 21, 1), -- Renuka Agri Organics Ltd
+(17, 22, 1), -- Shaw Wallace Ceylon Ltd
+(17, 23, 1), -- Richlife Dairies Limited
+(17, 24, 1), -- Kandy Plantations Limited
+(17, 25, 1), -- Galle Face Properties
+(17, 26, 1), -- Coco Lanka (Pvt) Ltd
+(17, 27, 1), -- Renuka Teas Ceylon (Pvt) Ltd
+-- Sahan (UserId 19)
+(19, 20, 1), -- Renuka Agri Foods PLC (RAIT)
+(19, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
+(19, 22, 1), -- Shaw Wallace Ceylon Ltd (SWIT)
+-- Tharaka (UserId 18)
+(18, 20, 1), -- Renuka Agri Foods PLC (RAIT)
+(18, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
+(18, 22, 1), -- Shaw Wallace Ceylon Ltd (SWIT)
+-- Sahan (UserId 19)
+(29, 20, 1), -- Renuka Agri Foods PLC (RAIT)
+(29, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
+(29, 22, 1), -- Shaw Wallace Ceylon Ltd (SWIT)
+-- Chamila (UserId 31)
+(31, 20, 1), -- Renuka Agri Foods PLC (RAIT)
+(31, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
+(31, 24, 1), -- Kandy Plantations Limited (KPIT)
+-- Lahiru (UserId 32)
+(32, 20, 1), -- Renuka Agri Foods PLC (RAIT)
+(32, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
+(32, 24, 1); -- Kandy Plantations Limited (KPIT)
 
