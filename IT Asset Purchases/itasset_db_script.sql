@@ -44,7 +44,19 @@ CREATE TABLE [Users] (
     UserName VARCHAR(255) NOT NULL,
     FullName VARCHAR(255) NOT NULL,
     IsHeadOrNot BIT NOT NULL,
-    IsAuthorizer VARCHAR(50) CHECK (IsAuthorizer IN ('Unauthorizer', 'IT Manager', 'CEO', 'MD','Editor'))
+    IsAuthorizer VARCHAR(50) CHECK (IsAuthorizer IN ('Unauthorizer', 'IT Manager', 'CEO', 'MD','Editor')),
+    email VARCHAR(255) not null --need to add this ,give me sql query.need to add this part step by step method*
+);
+
+ALTER TABLE [Users] ADD email VARCHAR(255) NULL;
+UPDATE Users set email='' where UserId=2 ;
+ALTER TABLE [Users] ALTER COLUMN email VARCHAR(255) NOT NULL;
+
+CREATE TABLE Tokens(
+UsersId INT NOT NULL REFERENCES [Users](UsersId) UNIQUE,
+Token VARCHAR(255) NOT NULL,
+IsUsed BIT DEFAULT 0,
+CreatedAt DATETIME DEFAULT GETDATE(),
 );
 
 -- Create Document table
@@ -74,7 +86,7 @@ CREATE TABLE Document (
     Quotation BIT,
     Configuration BIT,
     CostBeakdown BIT,
-    Location VARCHAR(255) NOT NULL,
+    LocationId VARCHAR(255) NOT NULL,
  SentToHO DATE NULL,
  ReceivedToHO DATE NULL,
  HandoverDate DATE NULL,
@@ -85,6 +97,7 @@ CREATE TABLE Document (
  PaymentReady BIT NULL,
  IsSellerPaid BIT NULL,
  FinalRemarks VARCHAR(MAX) NULL,
+ FOREIGN KEY (LocationId) REFERENCES Location(LocationId),
     FOREIGN KEY (ConfirmedBy) REFERENCES [Users](UsersId),
     FOREIGN KEY (ReasonId) REFERENCES Reason(ReasonId),
     FOREIGN KEY (CompanyId) REFERENCES Company(CompanyId),
@@ -104,6 +117,7 @@ CREATE TABLE RequestedItemPayments (
     DocumentID INT NOT NULL,
     SupplierId INT NOT NULL,
     Currency VARCHAR(50),
+    NeedToPrint BIT null,   -- use ITAssetRequest;ALTER TABLE RequestedItemPayments ADD NeedToPrint BIT NULL;
     FOREIGN KEY (DocumentID) REFERENCES Document(DocumentId),
     FOREIGN KEY (SupplierId) REFERENCES Supplier(SupplierId)
 );
@@ -153,6 +167,44 @@ CREATE TABLE UserCompanyAccess (
     CONSTRAINT UQ_UserCompany UNIQUE (UsersId, CompanyId)
 );
 
+Create table Pages (
+    PageId INT IDENTITY(1,1) PRIMARY KEY,
+    Parent VARCHAR(50) not null,
+    Child VARCHAR(50) not null,
+    Path VARCHAR(50) not null,
+    CONSTRAINT UQ_ParentChild UNIQUE (Parent, Child) 
+);
+
+Create table UserPagesAccess(
+UsersId int not null,
+PageId int not null,
+FOREIGN KEY (UsersId) REFERENCES [Users](UsersId),
+FOREIGN KEY (PageId) REFERENCES [Pages](PageId),
+PRIMARY KEY(UsersId,PageId)
+);
+
+INSERT INTO Pages (Parent, Child, Path)
+VALUES
+--  Capex Form Page
+('Capex Form', 'Capex Form', '~/About'),
+--  View Capex Pages (all FinalView.aspx variations)
+('View Capex', 'Pending Capex', '~/FinalView?status=pending'),
+('View Capex', 'Given to Finance', '~/FinalView?status=finance'),
+('View Capex', 'Payment Ready', '~/FinalView?status=payment'),
+('View Capex', 'Completed Capex', '~/FinalView?status=completed'),
+('View Capex', 'All Capex', '~/FinalView'),
+('View Capex', 'Deleted Capex', '~/FinalView?status=deleted'),
+--manage
+('Manage System', 'Manage Password', '~/ManageAccount.aspx'), 
+('Manage System', 'Manage Company', '~/ManageCompany.aspx'),
+('Manage System', 'Manage Department', '~/ManageDepartment.aspx'),
+('Manage System', 'Manage Reasons', '~/ManageReason.aspx'),
+('Manage System', 'Manage Supplier', '~/ManageSupplier.aspx'),
+('Manage System', 'Manage User', '~/ManageUser.aspx'),
+('Manage System', 'Manage Template', '~/ManageTemplate.aspx'),
+--logout
+('Logout', 'Logout', '~/Logout.aspx');
+
 
 INSERT INTO UserCompanyAccess (UsersId, CompanyId, IsActive) VALUES
 -- Chamika (UserId 22)
@@ -199,6 +251,7 @@ INSERT INTO UserCompanyAccess (UsersId, CompanyId, IsActive) VALUES
 (18, 20, 1), -- Renuka Agri Foods PLC (RAIT)
 (18, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
 (18, 22, 1), -- Shaw Wallace Ceylon Ltd (SWIT)
+(18, 23, 1),  --Richlife
 -- Sahan (UserId 19)
 (29, 20, 1), -- Renuka Agri Foods PLC (RAIT)
 (29, 21, 1), -- Renuka Agri Organics Ltd (ROIT)
